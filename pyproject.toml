@@ -38,6 +38,7 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
+    "ply>=3.11",
 ]
 
 
@@ -52,6 +53,7 @@ dev = [
     "rich>=14.0.0",
     "basedpyright>=1.29.1",
     "funlog>=0.2.1",
+    "ty>=0.0.1a18",
 ]
 
 [project.scripts]
@@ -167,6 +169,9 @@ python_functions = ["test_*"]
 testpaths = [
     "src",
     "tests",
+]
+pythonpath = [
+  "src"
 ]
 norecursedirs = []
 filterwarnings = []

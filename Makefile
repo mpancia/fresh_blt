@@ -4,15 +4,12 @@
 
 .DEFAULT_GOAL := default
 
-.PHONY: default install lint test upgrade build clean agent-rules
+.PHONY: default install test upgrade build clean agent-rules
 
-default: agent-rules install lint test 
+default: agent-rules install test 
 
 install:
 	uv sync --all-extras
-
-lint:
-	uv run python devtools/lint.py
 
 test:
 	uv run pytest
