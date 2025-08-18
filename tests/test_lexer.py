@@ -32,3 +32,15 @@ def test_lexer_on_4candidate_blt(blt_lexer):
     assert any(t.type == "EQUALS" for t in tokens)
     # Check for a ZERO token (standalone zero)
     assert any(t.type == "ZERO" for t in tokens)
+
+def test_lexer_invalid_blt_detected(blt_lexer, capsys):
+    data_path = Path(__file__).parent / "data" / "invalid.blt"
+    with open(data_path) as f:
+        data = f.read()
+        blt_lexer.test(data)
+    blt_lexer.lexer.input(data)
+    # Consume all tokens to trigger error handling
+    while blt_lexer.lexer.token():
+        pass
+    captured = capsys.readouterr()
+    assert "Illegal character" in captured.out

@@ -42,8 +42,9 @@ class BltLexer:
         r"^0[ \t]*\n"
         return t
 
+    # Quoted strings or single words
     def t_STRING(self, t):
-        r'"[^"]*"|[A-Za-z][A-Za-z0-9 _\-]*'
+        r"\"[^\"]*\"|^[A-Za-z][A-Za-z0-9_\-]*$"
         # Remove quotes if present
         if t.value.startswith('"') and t.value.endswith('"'):
             t.value = t.value[1:-1]
