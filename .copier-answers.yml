@@ -3,7 +3,7 @@ _commit: v0.2.17
 _src_path: gh:jlevy/simple-modern-uv
 package_author_email: msp@themsp.org
 package_author_name: Matt Pancia
-package_description: changeme
+package_description: A CLI tool to parse and convert Opavote .blt ranked choice voter files.
 package_github_org: mpancia
 package_module: fresh_blt
 package_name: fresh_blt

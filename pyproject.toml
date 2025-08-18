@@ -7,7 +7,7 @@ Repository = "https://github.com/mpancia/fresh_blt"
 
 [project]
 name = "fresh_blt"
-description = "changeme"
+description = "A CLI tool to parse and convert Opavote .blt ranked choice voter files."
 authors = [
     { name="Matt Pancia", email="msp@themsp.org" },
 ]
