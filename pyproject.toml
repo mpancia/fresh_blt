@@ -39,6 +39,7 @@ classifiers = [
 
 dependencies = [
     "lark>=1.2.2",
+    "pydantic>=2.11.7",
 ]
 
 
