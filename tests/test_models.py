@@ -1,0 +1,64 @@
+def test_sample_election_fixture(sample_election):
+    # Check election name
+    assert sample_election.name == "Sample Election"
+
+    # Check candidates
+    assert len(sample_election.candidates) == 4
+    names = {c.name for c in sample_election.candidates}
+    assert names == {"Alice", "Bob", "Carol", "Dave"}
+
+    # Check ballots
+    assert len(sample_election.ballots) == 2
+
+    # Check first ballot rankings and weight
+    ballot1 = sample_election.ballots[0]
+    assert ballot1.weight == 2
+    assert [[c.name for c in rank] for rank in ballot1.rankings] == [
+        ["Alice"],
+        ["Bob", "Dave"],
+        ["Carol"],
+    ]
+
+    # Check second ballot rankings and weight
+    ballot2 = sample_election.ballots[1]
+    assert ballot2.weight == 1
+    assert [[c.name for c in rank] for rank in ballot2.rankings] == [
+        ["Bob"],
+        ["Alice"],
+        ["Dave"],
+    ]
+
+    # Check that all candidates reference the election
+    for candidate in sample_election.candidates:
+        assert candidate.election is sample_election
+
+
+def test_candidate_withdrawn_and_election(sample_election):
+    # Carol is withdrawn, others are not
+    carol = next(c for c in sample_election.candidates if c.name == "Carol")
+    assert carol.withdrawn is True
+    for c in sample_election.candidates:
+        assert c.election is sample_election
+
+
+def test_ballot_rankings_and_weight(sample_election):
+    ballot = sample_election.ballots[0]
+    # Rankings: Alice > (Bob=Dave) > Carol
+    assert ballot.weight == 2
+    assert [set(c.name for c in rank) for rank in ballot.rankings] == [
+        {"Alice"}, {"Bob", "Dave"}, {"Carol"}
+    ]
+    # All candidates in ballot rankings are in election.candidates
+    all_names = {c.name for c in sample_election.candidates}
+    for rank in ballot.rankings:
+        for c in rank:
+            assert c.name in all_names
+
+
+def test_election_ballots_and_candidates(sample_election):
+    # Ballots reference the same election
+    for ballot in sample_election.ballots:
+        assert ballot.election is sample_election
+    # Candidates are unique by id
+    ids = [c.id for c in sample_election.candidates]
+    assert len(ids) == len(set(ids))
