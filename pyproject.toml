@@ -38,7 +38,7 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
-    "ply>=3.11",
+    "lark>=1.2.2",
 ]
 
 
