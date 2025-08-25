@@ -176,6 +176,33 @@ class Candidate(BaseModel):
             meta=data.get("meta", {})
         )
 
+    def __hash__(self) -> int:
+        """
+        Make Candidate instances hashable for use in sets and dictionaries.
+
+        The hash is based on the candidate's ID since it's unique and immutable.
+
+        Returns:
+            int: Hash value based on the candidate's ID
+        """
+        return hash(self.id)
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Check equality with another Candidate instance.
+
+        Two candidates are considered equal if they have the same ID.
+
+        Args:
+            other: Object to compare with
+
+        Returns:
+            bool: True if the candidates are equal (same ID), False otherwise
+        """
+        if not isinstance(other, Candidate):
+            return NotImplemented
+        return self.id == other.id
+
     def to_dict(self) -> dict[str, Any]:
         """
         Convert the Candidate instance to a dictionary representation.

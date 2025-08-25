@@ -9,7 +9,7 @@ withdrawn: (withdrawn_entry _NL)+
 withdrawn_entry: SIGNED_INT
 
 ballots: ballot_line+
-ballot_line: INT ballot_prefs "0" _NL
+ballot_line: INT ballot_prefs "0"? _NL
 ballot_prefs: ballot_pref+
 ballot_pref: INT ("=" INT)*
 

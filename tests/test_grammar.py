@@ -172,10 +172,11 @@ class TestGrammarErrorHandling:
         with pytest.raises(UnexpectedInput):
             blt_parser.parse("1 1\n-1 1 0\n0\n\"Candidate\"\n\"Test\"")
 
-    def test_grammar_ballot_without_zero_terminator(self):
-        """Test that parser requires ballot lines to end with 0."""
-        with pytest.raises(UnexpectedInput):
-            blt_parser.parse("1 1\n1 1\n0\n\"Candidate\"\n\"Test\"")
+    def test_grammar_ballot_without_zero_terminator_parses_correctly(self):
+        """Test that parser handles ballot lines without 0 terminator correctly."""
+        # This should now parse successfully since we made terminators optional
+        tree = blt_parser.parse("1 1\n1 1\n0\n\"Candidate\"\n\"Test\"")
+        assert tree is not None
 
 
 class TestGrammarEdgeCases:
@@ -258,3 +259,22 @@ Unquoted_Name
 """
         tree = blt_parser.parse(blt_content)
         assert tree is not None
+
+    def test_grammar_ballots_without_zero_terminators(self):
+        """Test parsing ballots from file with optional zero terminators."""
+        data_path = Path(__file__).parent / "data" / "ballots_no_zero.blt"
+        with open(data_path) as f:
+            data = f.read()
+        # Should parse successfully since terminators are now optional
+        tree = blt_parser.parse(data)
+        assert tree is not None
+
+        # Verify we can extract the ballots section
+        ballots = None
+        for child in tree.children:
+            if hasattr(child, "data") and child.data == "ballots":  # pyright: ignore[reportAttributeAccessIssue]
+                ballots = child
+                break
+
+        assert ballots is not None, "Ballots section not found"
+        assert len(ballots.children) == 6, f"Expected 6 ballot lines, got {len(ballots.children)}"  # pyright: ignore[reportAttributeAccessIssue]

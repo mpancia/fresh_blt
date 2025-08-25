@@ -156,7 +156,7 @@ class Ballot(BaseModel):
         Validate that rankings structure is well-formed.
 
         Ensures that:
-        - Rankings is not empty (though individual preference levels can be empty)
+        - Rankings structure is valid (allows empty rankings for exhausted preferences)
         - All candidates in rankings are unique across the entire ballot
         - Structure follows the expected list-of-lists format
 
@@ -167,10 +167,11 @@ class Ballot(BaseModel):
             The validated rankings
 
         Raises:
-            ValueError: If rankings structure is invalid or contains duplicate candidates
+            ValueError: If rankings structure contains duplicate candidates
         """
+        # Empty rankings are allowed for exhausted preferences
         if not v:
-            raise ValueError("Rankings cannot be empty - use an empty list for exhausted preferences")
+            return v
 
         # Check for duplicate candidates across all rankings
         seen_candidates = set()
