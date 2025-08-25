@@ -97,16 +97,29 @@ This provides:
 
 ### Data Export
 
-Export BLT data to JSON or CSV formats:
+Export BLT data to JSON or CSV formats with improved structure:
 
 ```bash
-# Export to JSON
+# Export to JSON (comprehensive format with summary)
 fresh_blt export path/to/election.blt -o election_data.json -f json
 fresh_blt export path/to/election.blt --output election_data.json --format json
 
-# Export to CSV (creates separate files for candidates and ballots)
+# Export to CSV (creates multiple structured files)
 fresh_blt export path/to/election.blt -o election_data.csv -f csv
 fresh_blt export path/to/election.blt --output election_data.csv --format csv
+# Creates: election_data_election.csv, election_data_candidates.csv, election_data_ballots.csv
+```
+
+### DataFrame Creation
+
+Create pandas DataFrames for programmatic analysis:
+
+```bash
+# Create DataFrames and show preview
+fresh_blt dataframe path/to/election.blt
+
+# Create DataFrames without preview
+fresh_blt dataframe path/to/election.blt --no-show-preview
 ```
 
 ### Validation
@@ -131,6 +144,7 @@ This checks for:
 | `ballots` | Display ballot information | `--limit`, `--show-rankings` |
 | `stats` | Show election statistics | None |
 | `export` | Export data to JSON/CSV | `-o/--output`, `-f/--format` |
+| `dataframe` | Create pandas DataFrames | `--show-preview/--no-show-preview` |
 | `validate` | Validate file structure | None |
 
 ## Examples

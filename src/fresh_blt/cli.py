@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from fresh_blt.export import export_with_format
 from fresh_blt.models.candidate import Candidate
 from fresh_blt.parse import (
     extract_candidates,
@@ -24,6 +25,8 @@ app = typer.Typer(
     help="A modern CLI tool for parsing and analyzing Opavote BLT files",
     add_completion=False,
 )
+
+__all__ = ["main"]
 
 # Module-level variables for Typer defaults to avoid B008 issues
 BLT_FILE_ARG = typer.Argument(..., help="Path to the BLT file")
@@ -240,53 +243,56 @@ def export(
     """Export BLT data to JSON or CSV format."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
 
-    if format.lower() == "json":
-        # Convert ballot data to JSON-serializable format using Pydantic model_dump
-        json_ballots = []
-        for ballot in ballot_list:
-            json_ballot = {
-                "weight": ballot["weight"],
-                "rankings": [
-                    [candidate.model_dump() for candidate in ranking]
-                    for ranking in ballot["rankings"]
-                ]
-            }
-            json_ballots.append(json_ballot)
+    try:
+        result = export_with_format(blt_data, candidate_list, ballot_list, output, format)
 
-        export_data = {
-            "election_info": blt_data,
-            "candidates": [candidate.model_dump() for candidate in candidate_list],
-            "ballots": json_ballots,
-        }
+        if format.lower() == "csv" and isinstance(result, list):
+            # result is a list of files for CSV format
+            console.print(f"[green]✓ Exported data to {len(result)} CSV files[/green]")
+        else:
+            # result is a single file path for JSON format
+            console.print(f"[green]✓ Exported data to {result}[/green]")
 
-        with open(output, "w", encoding="utf-8") as f:
-            json.dump(export_data, f, indent=2, ensure_ascii=False)
+    except ValueError as e:
+        console.print(f"[red]✗ {e}[/red]")
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"[red]✗ Export failed: {e}[/red]")
+        raise typer.Exit(1)
 
-        console.print(f"[green]Exported data to {output}[/green]")
 
-    elif format.lower() == "csv":
-        # Export candidates to CSV
-        candidates_file = output.with_stem(f"{output.stem}_candidates")
-        with open(candidates_file, "w", encoding="utf-8") as f:
-            f.write("id,name,withdrawn\n")
-            for candidate in candidate_list:
-                f.write(f"{candidate.id},{candidate.name},{candidate.withdrawn}\n")
+@app.command()
+def dataframe(
+    file_path: Path = BLT_FILE_ARG,
+    show_preview: bool = typer.Option(True, help="Show preview of DataFrames"),
+) -> None:
+    """Create and display pandas DataFrames from BLT data."""
+    try:
+        from fresh_blt.export import export_to_dataframes
 
-        # Export ballots to CSV (simplified)
-        ballots_file = output.with_stem(f"{output.stem}_ballots")
-        with open(ballots_file, "w", encoding="utf-8") as f:
-            f.write("ballot_id,weight,first_preferences\n")
-            for i, ballot in enumerate(ballot_list):
-                first_prefs = []
-                if ballot["rankings"] and ballot["rankings"][0]:
-                    first_prefs = [str(c.id) for c in ballot["rankings"][0]]
-                f.write(f"{i+1},{ballot['weight']},{'|'.join(first_prefs)}\n")
+        blt_data, candidate_list, ballot_list = load_blt_data(file_path)
+        dataframes = export_to_dataframes(blt_data, candidate_list, ballot_list)
 
-        console.print(f"[green]Exported candidates to {candidates_file}[/green]")
-        console.print(f"[green]Exported ballots to {ballots_file}[/green]")
+        console.print("[bold blue]DataFrames Created:[/bold blue]")
 
-    else:
-        console.print(f"[red]Unsupported format: {format}[/red]")
+        for name, df in dataframes.items():
+            console.print(f"\n[bold green]{name.title()} DataFrame:[/bold green]")
+            console.print(f"Shape: {df.shape[0]} rows × {df.shape[1]} columns")
+
+            if show_preview and not df.empty:
+                console.print("\n[bold]Preview:[/bold]")
+                # Convert to string to avoid rich formatting issues with DataFrames
+                preview = str(df.head())
+                console.print(preview)
+
+        console.print(f"\n[dim]DataFrames available as: election, candidates, ballots[/dim]")
+        console.print(f"[dim]Use Python API to access: from fresh_blt.export import export_to_dataframes[/dim]")
+
+    except ImportError:
+        console.print("[red]✗ pandas not available. Install with: pip install pandas[/red]")
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"[red]✗ DataFrame creation failed: {e}[/red]")
         raise typer.Exit(1)
 
 
