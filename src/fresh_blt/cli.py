@@ -27,6 +27,12 @@ app = typer.Typer(
 
 # Module-level variables for Typer defaults to avoid B008 issues
 BLT_FILE_ARG = typer.Argument(..., help="Path to the BLT file")
+WITHDRAWN_ONLY_OPTION = typer.Option(False, help="Show only withdrawn candidates")
+ACTIVE_ONLY_OPTION = typer.Option(False, help="Show only active candidates")
+LIMIT_OPTION = typer.Option(10, help="Maximum number of ballots to display")
+SHOW_RANKINGS_OPTION = typer.Option(False, help="Show detailed rankings for each ballot")
+OUTPUT_OPTION = typer.Option(..., "-o", "--output", help="Output file path")
+FORMAT_OPTION = typer.Option("json", "-f", "--format", help="Export format (json, csv)")
 
 
 def load_blt_data(file_path: Path) -> tuple[dict[str, Any], list[Candidate], list[dict[str, Any]]]:
@@ -88,8 +94,8 @@ def info(
 @app.command()
 def candidates(
     file_path: Path = BLT_FILE_ARG,
-    withdrawn_only: bool = typer.Option(False, help="Show only withdrawn candidates"),
-    active_only: bool = typer.Option(False, help="Show only active candidates"),
+    withdrawn_only: bool = WITHDRAWN_ONLY_OPTION,
+    active_only: bool = ACTIVE_ONLY_OPTION,
 ) -> None:
     """Display candidate information."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
@@ -121,8 +127,8 @@ def candidates(
 @app.command()
 def ballots(
     file_path: Path = BLT_FILE_ARG,
-    limit: int = typer.Option(10, help="Maximum number of ballots to display"),
-    show_rankings: bool = typer.Option(False, help="Show detailed rankings for each ballot"),
+    limit: int = LIMIT_OPTION,
+    show_rankings: bool = SHOW_RANKINGS_OPTION,
 ) -> None:
     """Display ballot information."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
@@ -228,8 +234,8 @@ def stats(
 @app.command()
 def export(
     file_path: Path = BLT_FILE_ARG,
-    output: Path = typer.Option(..., "-o", "--output", help="Output file path"),
-    format: str = typer.Option("json", "-f", "--format", help="Export format (json, csv)"),
+    output: Path = OUTPUT_OPTION,
+    format: str = FORMAT_OPTION,
 ) -> None:
     """Export BLT data to JSON or CSV format."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
