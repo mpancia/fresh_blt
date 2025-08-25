@@ -1,14 +1,12 @@
 # fresh_blt
 
-A modern CLI tool for parsing and analyzing Opavote BLT (Ballot Language Template) files used in ranked choice voting elections.
+A CLI tool and python library for parsing and analyzing Opavote .blt files used in ranked choice voting elections.
 
 ## Installation
 
-For how to install uv and Python, see [installation.md](installation.md).
-
 ### From PyPI (Recommended)
 
-Once published to PyPI, install using your preferred package manager:
+Install using your preferred package manager:
 
 **Using uvx (recommended for uv users):**
 ```bash
