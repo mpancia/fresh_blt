@@ -6,7 +6,6 @@ from typing import Any
 
 from lark import Tree
 
-from fresh_blt.grammar import blt_parser
 from fresh_blt.models.candidate import Candidate
 from fresh_blt.parse import (
     extract_candidates,

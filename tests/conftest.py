@@ -15,19 +15,18 @@ def sample_election():
     # Create the election object first (candidates/ballots will reference it)
     election = Election(name="Sample Election")
 
-    # Create candidates, referencing the election
+    # Create candidates
     candidates = [
-        Candidate(id=1, name="Alice", withdrawn=False, election=election),
-        Candidate(id=2, name="Bob", withdrawn=False, election=election),
-        Candidate(id=3, name="Carol", withdrawn=True, election=election),
-        Candidate(id=4, name="Dave", withdrawn=False, election=election),
+        Candidate(id=1, name="Alice", withdrawn=False),
+        Candidate(id=2, name="Bob", withdrawn=False),
+        Candidate(id=3, name="Carol", withdrawn=True),
+        Candidate(id=4, name="Dave", withdrawn=False),
     ]
     election.candidates = candidates
 
-    # Create ballots, referencing the election and candidates
+    # Create ballots with candidates
     ballots = [
         Ballot(
-            election=election,
             rankings=[
                 [candidates[0]],  # Alice
                 [candidates[1], candidates[3]],  # Bob = Dave
@@ -36,7 +35,6 @@ def sample_election():
             weight=2,
         ),
         Ballot(
-            election=election,
             rankings=[
                 [candidates[1]],  # Bob
                 [candidates[0]],  # Alice

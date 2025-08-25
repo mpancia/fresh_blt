@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -12,7 +12,7 @@ class Candidate(BaseModel):
     meta: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, data: dict) -> Candidate:
+    def from_dict(cls, data: dict[str, Any]) -> Candidate:
         return cls(
             id=data["id"],
             name=data["name"],
@@ -20,7 +20,7 @@ class Candidate(BaseModel):
             meta=data.get("meta", {})
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
