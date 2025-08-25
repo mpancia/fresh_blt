@@ -1,5 +1,17 @@
 # fresh_blt
 
+<div align="center">
+
+```
+┌──────────────────────────────────┐
+│░█▀▀░█▀▄░█▀▀░█▀▀░█░█░░░█▀▄░█░░░▀█▀│
+│░█▀▀░█▀▄░█▀▀░▀▀█░█▀█░░░█▀▄░█░░░░█░│
+│░▀░░░▀░▀░▀▀▀░▀▀▀░▀░▀░░░▀▀░░▀▀▀░░▀░│
+└──────────────────────────────────┘
+```
+
+</div>
+
 A CLI tool and python library for parsing and analyzing Opavote .blt files used in ranked choice voting elections.
 
 ## Installation
