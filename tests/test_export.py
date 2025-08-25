@@ -20,7 +20,6 @@ from fresh_blt.export import (
     export_to_json,
     export_with_format,
 )
-from fresh_blt.models.candidate import Candidate
 
 
 class TestDataFrameCreation:
@@ -33,7 +32,7 @@ class TestDataFrameCreation:
         assert len(df) == 4
         assert list(df.columns) == ["id", "name", "withdrawn"]
         assert df.iloc[0]["name"] == "Alice"
-        assert df.iloc[2]["withdrawn"] == True  # Carol is withdrawn
+        assert df.iloc[2]["withdrawn"]  # Carol is withdrawn
 
     def test_create_election_dataframe(self, sample_election):
         """Test creation of election DataFrame."""

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -22,7 +21,7 @@ from fresh_blt.parse import (
 console = Console()
 app = typer.Typer(
     name="fresh-blt",
-    help="A modern CLI tool for parsing and analyzing Opavote BLT files",
+    help="A CLI tool for parsing and analyzing Opavote BLT files",
     add_completion=False,
 )
 
@@ -255,10 +254,10 @@ def export(
 
     except ValueError as e:
         console.print(f"[red]✗ {e}[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     except Exception as e:
         console.print(f"[red]✗ Export failed: {e}[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
@@ -285,15 +284,15 @@ def dataframe(
                 preview = str(df.head())
                 console.print(preview)
 
-        console.print(f"\n[dim]DataFrames available as: election, candidates, ballots[/dim]")
-        console.print(f"[dim]Use Python API to access: from fresh_blt.export import export_to_dataframes[/dim]")
+        console.print("\n[dim]DataFrames available as: election, candidates, ballots[/dim]")
+        console.print("[dim]Use Python API to access: from fresh_blt.export import export_to_dataframes[/dim]")
 
     except ImportError:
         console.print("[red]✗ pandas not available. Install with: pip install pandas[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
     except Exception as e:
         console.print(f"[red]✗ DataFrame creation failed: {e}[/red]")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
