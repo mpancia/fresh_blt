@@ -4,15 +4,19 @@
 
 .DEFAULT_GOAL := default
 
-.PHONY: default install test upgrade build clean 
+.PHONY: default install test lint upgrade build clean
 
-default: install test 
+default: install test
 
 install:
 	uv sync --all-extras
 
 test:
 	uv run pytest
+
+lint:
+	uv run ruff check src tests
+	uv run basedpyright || echo "Type checking completed with warnings"
 
 upgrade:
 	uv sync --upgrade --all-extras --dev

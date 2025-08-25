@@ -8,7 +8,7 @@ organized by component using test classes for better maintainability and structu
 from pathlib import Path
 
 import pytest
-from lark import UnexpectedInput
+from lark import ParseTree, UnexpectedInput
 
 from fresh_blt.grammar import blt_parser
 
@@ -17,7 +17,7 @@ class TestGrammarParser:
     """Test cases for the BLT grammar parser functionality."""
 
     @pytest.fixture(scope="class", params=["4candidate.blt", "4candidate_no_withdrawn.blt"])
-    def parsed_tree(self, request):
+    def parsed_tree(self, request) -> tuple[ParseTree, str]:
         """Fixture that provides parsed BLT file trees."""
         data_path = Path(__file__).parent / "data" / request.param
         with open(data_path) as f:
