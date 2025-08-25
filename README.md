@@ -6,10 +6,36 @@ A modern CLI tool for parsing and analyzing Opavote BLT (Ballot Language Templat
 
 For how to install uv and Python, see [installation.md](installation.md).
 
-Install the package using uv:
+### From PyPI (Recommended)
+
+Once published to PyPI, install using your preferred package manager:
+
+**Using uvx (recommended for uv users):**
+```bash
+uvx fresh_blt --help
+```
+
+**Using pipx:**
+```bash
+pipx install fresh_blt
+```
+
+**Using pip:**
+```bash
+pip install fresh_blt
+```
+
+### From Source
+
+For development or to install from the repository:
 
 ```bash
 uv install .
+```
+
+Or using pip:
+```bash
+pip install .
 ```
 
 ## CLI Usage
