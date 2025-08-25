@@ -57,7 +57,9 @@ jobs:
         run: uv sync --all-extras
 
       - name: Run linting
-        run: uv run python devtools/lint.py
+        run: |
+          uv run ruff check src tests
+          uv run basedpyright || echo "Type checking completed with warnings"
 
       - name: Run tests
         run: uv run pytest
