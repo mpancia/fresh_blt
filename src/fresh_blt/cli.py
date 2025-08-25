@@ -27,7 +27,6 @@ app = typer.Typer(
 
 # Module-level variables for Typer defaults to avoid B008 issues
 BLT_FILE_ARG = typer.Argument(..., help="Path to the BLT file")
-OUTPUT_FILE_OPTION = typer.Option(..., help="Output file path")
 
 
 def load_blt_data(file_path: Path) -> tuple[dict[str, Any], list[Candidate], list[dict[str, Any]]]:
@@ -229,8 +228,8 @@ def stats(
 @app.command()
 def export(
     file_path: Path = BLT_FILE_ARG,
-    output: Path = OUTPUT_FILE_OPTION,
-    format: str = typer.Option("json", help="Export format (json, csv)"),
+    output: Path = typer.Option(..., "-o", "--output", help="Output file path"),
+    format: str = typer.Option("json", "-f", "--format", help="Export format (json, csv)"),
 ) -> None:
     """Export BLT data to JSON or CSV format."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
