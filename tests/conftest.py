@@ -47,24 +47,24 @@ def predictable_election(faker):
         'candidates': [
             {'id': 1, 'name': 'Alice', 'withdrawn': False},
             {'id': 2, 'name': 'Bob', 'withdrawn': False},
-            {'id': 3, 'name': 'Carol', 'withdrawn': True},  # Withdrawn candidate
+            {'id': 3, 'name': 'Carol', 'withdrawn': True},  
             {'id': 4, 'name': 'Dave', 'withdrawn': False},
         ],
         'ballots': [
             {
                 'weight': 2,
                 'rankings': [
-                    [{'id': 1, 'name': 'Alice'}],  # Alice
-                    [{'id': 2, 'name': 'Bob'}, {'id': 4, 'name': 'Dave'}],  # Bob = Dave
-                    [{'id': 3, 'name': 'Carol'}],  # Carol
+                    [{'id': 1, 'name': 'Alice'}],  
+                    [{'id': 2, 'name': 'Bob'}, {'id': 4, 'name': 'Dave'}],  
+                    [{'id': 3, 'name': 'Carol'}],  
                 ]
             },
             {
                 'weight': 1,
                 'rankings': [
-                    [{'id': 2, 'name': 'Bob'}],  # Bob
-                    [{'id': 1, 'name': 'Alice'}],  # Alice
-                    [{'id': 4, 'name': 'Dave'}],  # Dave
+                    [{'id': 2, 'name': 'Bob'}],  
+                    [{'id': 1, 'name': 'Alice'}],
+                    [{'id': 4, 'name': 'Dave'}],
                 ]
             }
         ],
@@ -117,7 +117,7 @@ def valid_blt_file(faker):
     election_data = faker.election(
         num_candidates=4,
         num_ballots=8,
-        withdrawn_rate=0.25,  # One candidate withdrawn
+        withdrawn_rate=0.25,
         num_seats=2
     )
     blt_content = faker.blt_content(election_data)
@@ -127,7 +127,7 @@ def valid_blt_file(faker):
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  # Cleanup
+    temp_path.unlink()  
 
 
 @pytest.fixture
@@ -136,7 +136,7 @@ def valid_blt_no_withdrawn_file(faker):
     election_data = faker.election(
         num_candidates=4,
         num_ballots=6,
-        withdrawn_rate=0.0,  # No withdrawn candidates
+        withdrawn_rate=0.0,
         num_seats=1
     )
     blt_content = faker.blt_content(election_data)
@@ -146,7 +146,7 @@ def valid_blt_no_withdrawn_file(faker):
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  # Cleanup
+    temp_path.unlink()
 
 
 @pytest.fixture
@@ -166,7 +166,6 @@ def invalid_blt_file():
 @pytest.fixture
 def grammar_blt_content_withdrawn():
     """Create BLT content for grammar testing with withdrawn candidates."""
-    # This replicates the structure of 4candidate.blt for grammar testing
     blt_content = """4 2
 -2
 3 1 3 4 0
@@ -188,7 +187,6 @@ def grammar_blt_content_withdrawn():
 @pytest.fixture
 def grammar_blt_content_no_withdrawn():
     """Create BLT content for grammar testing without withdrawn candidates."""
-    # This replicates the structure of 4candidate_no_withdrawn.blt for grammar testing
     blt_content = """4 2
 3 1 3 4 0
 4 1 3 2 0
@@ -209,7 +207,6 @@ def grammar_blt_content_no_withdrawn():
 @pytest.fixture
 def grammar_blt_content_no_zero_terminators():
     """Create BLT content for grammar testing without zero terminators."""
-    # This replicates the structure of ballots_no_zero.blt for grammar testing
     blt_content = """4 2
 -2
 3 1 3 4
@@ -236,7 +233,7 @@ def grammar_blt_file_withdrawn(grammar_blt_content_withdrawn):
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  # Cleanup
+    temp_path.unlink() 
 
 
 @pytest.fixture
@@ -247,7 +244,7 @@ def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  # Cleanup
+    temp_path.unlink()
 
 
 @pytest.fixture
@@ -258,4 +255,4 @@ def grammar_blt_file_no_zero_terminators(grammar_blt_content_no_zero_terminators
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  # Cleanup
+    temp_path.unlink()
