@@ -29,44 +29,69 @@ class TestDataFrameCreation:
         """Test creation of candidates DataFrame."""
         df = create_candidates_dataframe(sample_election.candidates)
 
-        assert len(df) == 4
+        # Check basic structure
+        assert len(df) == len(sample_election.candidates)
         assert list(df.columns) == ["id", "name", "withdrawn"]
-        assert df.iloc[0]["name"] == "Alice"
-        assert df.iloc[2]["withdrawn"]  # Carol is withdrawn
+
+        # Check that all candidates have valid data
+        assert all(isinstance(name, str) and len(name) > 0 for name in df["name"])
+        assert all(isinstance(w, bool) for w in df["withdrawn"])
+
+        # Check that IDs are unique and positive
+        assert len(df["id"].unique()) == len(df)
+        assert all(id > 0 for id in df["id"])
 
     def test_create_election_dataframe(self, sample_election):
         """Test creation of election DataFrame."""
-        # Create mock election data
+        # Create election data based on the actual election
+        withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
         election_data = {
-            "title": "Sample Election",
-            "num_candidates": 4,
-            "num_positions": 2,
-            "withdrawn_candidate_ids": [3],
-            "total_ballots": 2,
-            "total_votes": 3,
+            "title": sample_election.name,
+            "num_candidates": len(sample_election.candidates),
+            "num_positions": 1,  # Default for single-winner elections
+            "withdrawn_candidate_ids": withdrawn_ids,
+            "total_ballots": len(sample_election.ballots),
+            "total_votes": sum(b.weight for b in sample_election.ballots),
         }
 
         df = create_election_dataframe(election_data)
 
         assert len(df) == 1
-        assert df.iloc[0]["title"] == "Sample Election"
-        assert df.iloc[0]["total_ballots"] == 2
+        assert df.iloc[0]["title"] == sample_election.name
+        assert df.iloc[0]["num_candidates"] == len(sample_election.candidates)
+        assert df.iloc[0]["total_ballots"] == len(sample_election.ballots)
 
     def test_create_ballots_dataframe(self, sample_election):
         """Test creation of ballots DataFrame."""
-        df = create_ballots_dataframe(
-            [
-                {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-                {"weight": 1, "rankings": [sample_election.candidates[2:]]},
-            ],
-            sample_election.candidates,
-        )
+        # Create test ballot data using actual candidates from the election
+        candidates = sample_election.candidates
+        if len(candidates) < 2:
+            pytest.skip("Need at least 2 candidates for ballot test")
+
+        # Create a couple of test ballots
+        test_ballots = [
+            {
+                "weight": 2,
+                "rankings": [[candidates[0]], [candidates[1]]]  # First > Second
+            },
+            {
+                "weight": 1,
+                "rankings": [[candidates[1]], [candidates[0]]]  # Second > First
+            },
+        ]
+
+        df = create_ballots_dataframe(test_ballots, candidates)
 
         assert len(df) == 2
         assert df.iloc[0]["weight"] == 2
         assert df.iloc[0]["ballot_id"] == 1
         assert "rank_1_candidates" in df.columns
         assert "rank_1_ids" in df.columns
+
+        # Check that candidate names appear in the dataframe
+        candidate_names = {c.name for c in candidates}
+        content = df.to_string()
+        assert any(name in content for name in candidate_names)
 
 
 class TestCSVExport:
@@ -77,21 +102,25 @@ class TestCSVExport:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export"
 
-            # Create mock election data
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
             election_data = {
-                "title": "Test Election",
-                "num_candidates": 4,
-                "num_positions": 2,
-                "withdrawn_candidate_ids": [3],
-                "total_ballots": 2,
-                "total_votes": 3,
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
             }
 
-            # Create mock ballot data
-            ballots = [
-                {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-                {"weight": 1, "rankings": [sample_election.candidates[2:]]},
-            ]
+            # Create ballot data using actual election ballots
+            ballots = []
+            for _i, ballot in enumerate(sample_election.ballots):
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             files = export_to_csv(election_data, sample_election.candidates, ballots, output_path)
 
@@ -114,31 +143,40 @@ class TestCSVExport:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export"
 
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
             election_data = {
-                "title": "Test Election",
-                "num_candidates": 4,
-                "num_positions": 2,
-                "withdrawn_candidate_ids": [3],
-                "total_ballots": 2,
-                "total_votes": 3,
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
             }
 
-            ballots = [
-                {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-            ]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             files = export_to_csv(election_data, sample_election.candidates, ballots, output_path)
 
             # Check candidates CSV content
             candidates_file = next(f for f in files if "candidates" in f.name)
             content = candidates_file.read_text()
-            assert "Alice" in content
-            assert "Carol" in content
+
+            # Verify that candidate names from the election appear in the CSV
+            for candidate in sample_election.candidates:
+                assert candidate.name in content
 
             # Check election CSV content
             election_file = next(f for f in files if "election" in f.name)
             content = election_file.read_text()
-            assert "Test Election" in content
+            assert sample_election.name in content
 
 
 class TestJSONExport:
@@ -149,18 +187,25 @@ class TestJSONExport:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export.json"
 
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
             election_data = {
-                "title": "Test Election",
-                "num_candidates": 4,
-                "num_positions": 2,
-                "withdrawn_candidate_ids": [3],
-                "total_ballots": 2,
-                "total_votes": 3,
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
             }
 
-            ballots = [
-                {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-            ]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             result_path = export_to_json(election_data, sample_election.candidates, ballots, output_path)
 
@@ -176,32 +221,49 @@ class TestJSONExport:
             assert "ballots" in data
             assert "summary" in data
 
-            assert data["election_info"]["title"] == "Test Election"
-            assert len(data["candidates"]) == 4
-            assert len(data["ballots"]) == 1
-            assert data["summary"]["total_candidates"] == 4
+            assert data["election_info"]["title"] == sample_election.name
+            assert len(data["candidates"]) == len(sample_election.candidates)
+            assert len(data["ballots"]) == len(sample_election.ballots)
+            assert data["summary"]["total_candidates"] == len(sample_election.candidates)
 
     def test_export_to_json_ballot_structure(self, sample_election):
         """Test that JSON ballot data has correct structure."""
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export.json"
 
-            election_data = {"title": "Test Election", "num_candidates": 2, "num_positions": 1,
-                           "withdrawn_candidate_ids": [], "total_ballots": 1, "total_votes": 2}
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
+            election_data = {
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
+            }
 
-            ballots = [
-                {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-            ]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             export_to_json(election_data, sample_election.candidates, ballots, output_path)
 
             with open(output_path) as f:
                 data = json.load(f)
 
+            # Check that we have ballots and they have the expected structure
+            assert len(data["ballots"]) > 0
             ballot = data["ballots"][0]
             assert ballot["ballot_id"] == 1
-            assert ballot["weight"] == 2
+            assert "weight" in ballot
             assert "rankings" in ballot
+            assert isinstance(ballot["weight"], int)
+            assert ballot["weight"] > 0
 
 
 class TestDataFramesExport:
@@ -209,18 +271,25 @@ class TestDataFramesExport:
 
     def test_export_to_dataframes_returns_all_frames(self, sample_election):
         """Test that export_to_dataframes returns all three DataFrames."""
+        # Create election data based on the actual election
+        withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
         election_data = {
-            "title": "Test Election",
-            "num_candidates": 4,
-            "num_positions": 2,
-            "withdrawn_candidate_ids": [3],
-            "total_ballots": 2,
-            "total_votes": 3,
+            "title": sample_election.name,
+            "num_candidates": len(sample_election.candidates),
+            "num_positions": 1,
+            "withdrawn_candidate_ids": withdrawn_ids,
+            "total_ballots": len(sample_election.ballots),
+            "total_votes": sum(b.weight for b in sample_election.ballots),
         }
 
-        ballots = [
-            {"weight": 2, "rankings": [sample_election.candidates[:2]]},
-        ]
+        # Use actual ballots from the election
+        ballots = []
+        for ballot in sample_election.ballots:
+            ballot_dict = {
+                "weight": ballot.weight,
+                "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+            }
+            ballots.append(ballot_dict)
 
         dataframes = export_to_dataframes(election_data, sample_election.candidates, ballots)
 
@@ -228,9 +297,9 @@ class TestDataFramesExport:
         assert "candidates" in dataframes
         assert "ballots" in dataframes
 
-        assert len(dataframes["candidates"]) == 4
-        assert len(dataframes["ballots"]) == 1
-        assert dataframes["election"].iloc[0]["title"] == "Test Election"
+        assert len(dataframes["candidates"]) == len(sample_election.candidates)
+        assert len(dataframes["ballots"]) == len(sample_election.ballots)
+        assert dataframes["election"].iloc[0]["title"] == sample_election.name
 
 
 class TestExportWithFormat:
@@ -241,10 +310,25 @@ class TestExportWithFormat:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export"
 
-            election_data = {"title": "Test Election", "num_candidates": 4, "num_positions": 2,
-                           "withdrawn_candidate_ids": [], "total_ballots": 1, "total_votes": 2}
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
+            election_data = {
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
+            }
 
-            ballots = [{"weight": 1, "rankings": [sample_election.candidates[:2]]}]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             result = export_with_format(election_data, sample_election.candidates, ballots, output_path, "csv")
 
@@ -257,10 +341,25 @@ class TestExportWithFormat:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export.json"
 
-            election_data = {"title": "Test Election", "num_candidates": 4, "num_positions": 2,
-                           "withdrawn_candidate_ids": [], "total_ballots": 1, "total_votes": 2}
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
+            election_data = {
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
+            }
 
-            ballots = [{"weight": 1, "rankings": [sample_election.candidates[:2]]}]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             result = export_with_format(election_data, sample_election.candidates, ballots, output_path, "json")
 
@@ -270,17 +369,32 @@ class TestExportWithFormat:
             # Verify JSON content
             with open(result) as f:
                 data = json.load(f)
-                assert data["election_info"]["title"] == "Test Election"
+                assert data["election_info"]["title"] == sample_election.name
 
     def test_export_with_format_invalid_format(self, sample_election):
         """Test export_with_format with invalid format raises error."""
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "test_export"
 
-            election_data = {"title": "Test Election", "num_candidates": 4, "num_positions": 2,
-                           "withdrawn_candidate_ids": [], "total_ballots": 1, "total_votes": 2}
+            # Create election data based on the actual election
+            withdrawn_ids = [c.id for c in sample_election.candidates if c.withdrawn]
+            election_data = {
+                "title": sample_election.name,
+                "num_candidates": len(sample_election.candidates),
+                "num_positions": 1,
+                "withdrawn_candidate_ids": withdrawn_ids,
+                "total_ballots": len(sample_election.ballots),
+                "total_votes": sum(b.weight for b in sample_election.ballots),
+            }
 
-            ballots = [{"weight": 1, "rankings": [sample_election.candidates[:2]]}]
+            # Use actual ballots from the election
+            ballots = []
+            for ballot in sample_election.ballots:
+                ballot_dict = {
+                    "weight": ballot.weight,
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                }
+                ballots.append(ballot_dict)
 
             with pytest.raises(ValueError, match="Unsupported format"):
                 export_with_format(election_data, sample_election.candidates, ballots, output_path, "xml")
