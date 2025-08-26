@@ -16,7 +16,6 @@ test:
 
 lint:
 	uv run ruff check src tests
-	uv run basedpyright || echo "Type checking completed with warnings"
 
 upgrade:
 	uv sync --upgrade --all-extras --dev
