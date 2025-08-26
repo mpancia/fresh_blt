@@ -167,6 +167,94 @@ class BLTProvider(BaseProvider):
             "num_seats": num_seats,
         }
 
+    def close_election(
+        self,
+        num_candidates: int = 5,
+        num_ballots: int = 100,
+        withdrawn_rate: float = 0.0,
+        num_seats: int = 1,
+        closeness_factor: float = 0.8,
+    ) -> dict[str, Any]:
+        """Generate an election with close results between top candidates."""
+        # Generate candidates (no withdrawals for close races)
+        candidates = []
+        for i in range(num_candidates):
+            candidate = self.candidate(candidate_id=i + 1, withdrawn_rate=withdrawn_rate)
+            candidates.append(candidate)
+
+        # Target distribution for first preferences to ensure close results
+        # Use a Dirichlet distribution-like approach to create close vote counts
+        target_votes = []
+        remaining_ballots = num_ballots
+
+        # Generate target vote counts that are close to each other
+        for i in range(num_candidates - 1):
+            # Each candidate gets between 15-35% of remaining votes
+            min_votes = max(1, int(remaining_ballots * 0.15))
+            max_votes = int(remaining_ballots * 0.35)
+            votes = self.generator.random_int(min=min_votes, max=max_votes)
+            target_votes.append(votes)
+            remaining_ballots -= votes
+
+        # Last candidate gets remaining votes
+        target_votes.append(remaining_ballots)
+
+        # Shuffle to randomize which candidate gets which vote count
+        self.generator.random.shuffle(target_votes)
+
+        # Generate ballots to match target distribution
+        ballots = []
+        candidate_indices = list(range(num_candidates))
+
+        for candidate_idx, target_count in enumerate(target_votes):
+            candidate_id = candidate_idx + 1
+
+            for _ in range(target_count):
+                # Create ballot favoring this candidate
+                ballot = self._generate_close_ballot(candidates, candidate_id, closeness_factor)
+                ballots.append(ballot)
+
+        return {
+            "name": self.election_name(),
+            "candidates": candidates,
+            "ballots": ballots,
+            "num_seats": num_seats,
+        }
+
+    def _generate_close_ballot(
+        self,
+        candidates: list[dict[str, Any]],
+        favored_candidate_id: int,
+        closeness_factor: float
+    ) -> dict[str, Any]:
+        """Generate a ballot that favors a specific candidate but maintains some randomness."""
+        # Start with favored candidate first (closeness_factor chance)
+        if self.generator.boolean(chance_of_getting_true=int(closeness_factor * 100)):
+            # Put favored candidate first
+            remaining_candidates = [c for c in candidates if c["id"] != favored_candidate_id]
+            self.generator.random.shuffle(remaining_candidates)
+            ordered_candidates = [next(c for c in candidates if c["id"] == favored_candidate_id)] + remaining_candidates
+        else:
+            # Random ordering (for some diversity)
+            ordered_candidates = list(candidates)
+            self.generator.random.shuffle(ordered_candidates)
+
+        # Create rankings - sometimes full rankings, sometimes partial
+        num_preferences = len(ordered_candidates)
+        if self.generator.boolean(chance_of_getting_true=20):  # 20% partial rankings
+            num_preferences = self.generator.random_int(min=1, max=len(ordered_candidates))
+
+        rankings = []
+        for i in range(num_preferences):
+            rankings.append([ordered_candidates[i]])
+
+        # Generate weight (mostly 1, occasionally higher)
+        weight = 1
+        if self.generator.boolean(chance_of_getting_true=10):  # 10% weighted
+            weight = self.generator.random_int(min=2, max=5)
+
+        return {"rankings": rankings, "weight": weight}
+
     def blt_content(self, election_data: dict[str, Any] | None = None) -> str:
         """Generate BLT file content from election data."""
         if election_data is None:

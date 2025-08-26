@@ -1,8 +1,7 @@
 """
-High-level generators for common BLT scenarios.
+High-level generators for common election scenarios.
 
-This module provides convenient generators for specific types of elections
-and use cases, built on top of the BLTProvider.
+This module provides convenient generators for specific types of elections.
 """
 
 from faker import Faker
@@ -33,7 +32,7 @@ class BLTGenerators:
     def close_race(self) -> str:
         """Generate an election with close results."""
         return self.faker.blt_content(
-            self.faker.election(num_candidates=5, num_ballots=100)
+            self.faker.close_election(num_candidates=5, num_ballots=100)
         )
 
     def multi_seat_election(self, num_seats: int = 3) -> str:
