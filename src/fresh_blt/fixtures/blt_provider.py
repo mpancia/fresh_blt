@@ -183,7 +183,6 @@ class BLTProvider(BaseProvider):
             candidates.append(candidate)
 
         # Target distribution for first preferences to ensure close results
-        # Use a Dirichlet distribution-like approach to create close vote counts
         target_votes = []
         remaining_ballots = num_ballots
 
