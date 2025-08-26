@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -19,26 +18,9 @@ def runner():
 
 
 @pytest.fixture
-def valid_blt_file():
-    """Path to a valid BLT test file."""
-    return Path("tests/data/4candidate.blt")
-
-
-@pytest.fixture
-def valid_blt_no_withdrawn_file():
-    """Path to a valid BLT test file with no withdrawn candidates."""
-    return Path("tests/data/4candidate_no_withdrawn.blt")
-
-
-@pytest.fixture
-def invalid_blt_file():
-    """Path to an invalid BLT test file."""
-    return Path("tests/data/invalid.blt")
-
-
-@pytest.fixture
 def temp_dir():
     """Temporary directory for output files."""
+    import tempfile
     with tempfile.TemporaryDirectory() as tmp_dir:
         yield Path(tmp_dir)
 

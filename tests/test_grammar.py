@@ -5,8 +5,6 @@ This module contains comprehensive tests for the BLT grammar parsing functionali
 organized by component using test classes for better maintainability and structure.
 """
 
-from pathlib import Path
-
 import pytest
 from lark import ParseTree, UnexpectedInput
 
@@ -19,9 +17,40 @@ class TestGrammarParser:
     @pytest.fixture(scope="class", params=["4candidate.blt", "4candidate_no_withdrawn.blt"])
     def parsed_tree(self, request) -> tuple[ParseTree, str]:
         """Fixture that provides parsed BLT file trees."""
-        data_path = Path(__file__).parent / "data" / request.param
-        with open(data_path) as f:
-            data = f.read()
+        # Use inline BLT content instead of reading from files
+        if request.param == "4candidate.blt":
+            # BLT content with withdrawn candidates
+            data = """4 2
+-2
+3 1 3 4 0
+4 1 3 2 0
+2 4 1=3 0
+1 2 0
+2 2=4=3 1 0
+1 3 4 2 0
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
+        else:
+            # BLT content without withdrawn candidates
+            data = """4 2
+3 1 3 4 0
+4 1 3 2 0
+2 4 1=3 0
+1 2 0
+2 2=4=3 1 0
+1 3 4 2 0
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
         try:
             tree = blt_parser.parse(data)
             assert tree is not None
@@ -262,9 +291,22 @@ Unquoted_Name
 
     def test_grammar_ballots_without_zero_terminators(self):
         """Test parsing ballots from file with optional zero terminators."""
-        data_path = Path(__file__).parent / "data" / "ballots_no_zero.blt"
-        with open(data_path) as f:
-            data = f.read()
+        # Use the grammar test content without zero terminators
+        data = """4 2
+-2
+3 1 3 4
+4 1 3 2
+2 4 1=3
+1 2
+2 2=4=3 1
+1 3 4 2
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
         # Should parse successfully since terminators are now optional
         tree = blt_parser.parse(data)
         assert tree is not None

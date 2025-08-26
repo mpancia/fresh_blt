@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 import pytest
 from faker import Faker
 
@@ -105,3 +108,154 @@ def blt_content(faker):
 def election_data(faker):
     """Generate raw election data dictionary."""
     return faker.election(num_candidates=4, num_ballots=5)
+
+
+# Temporary BLT file fixtures for CLI testing
+@pytest.fixture
+def valid_blt_file(faker):
+    """Create a temporary valid BLT file with 4 candidates (one withdrawn)."""
+    election_data = faker.election(
+        num_candidates=4,
+        num_ballots=8,
+        withdrawn_rate=0.25,  # One candidate withdrawn
+        num_seats=2
+    )
+    blt_content = faker.blt_content(election_data)
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(blt_content)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup
+
+
+@pytest.fixture
+def valid_blt_no_withdrawn_file(faker):
+    """Create a temporary valid BLT file with 4 candidates (no withdrawn)."""
+    election_data = faker.election(
+        num_candidates=4,
+        num_ballots=6,
+        withdrawn_rate=0.0,  # No withdrawn candidates
+        num_seats=1
+    )
+    blt_content = faker.blt_content(election_data)
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(blt_content)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup
+
+
+@pytest.fixture
+def invalid_blt_file():
+    """Create a temporary invalid BLT file for error testing."""
+    invalid_content = "This is not a valid BLT file\nJust some random text\n123\n"
+
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(invalid_content)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup
+
+
+# Temporary BLT file fixtures for grammar testing
+@pytest.fixture
+def grammar_blt_content_withdrawn():
+    """Create BLT content for grammar testing with withdrawn candidates."""
+    # This replicates the structure of 4candidate.blt for grammar testing
+    blt_content = """4 2
+-2
+3 1 3 4 0
+4 1 3 2 0
+2 4 1=3 0
+1 2 0
+2 2=4=3 1 0
+1 3 4 2 0
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
+    return blt_content
+
+
+@pytest.fixture
+def grammar_blt_content_no_withdrawn():
+    """Create BLT content for grammar testing without withdrawn candidates."""
+    # This replicates the structure of 4candidate_no_withdrawn.blt for grammar testing
+    blt_content = """4 2
+3 1 3 4 0
+4 1 3 2 0
+2 4 1=3 0
+1 2 0
+2 2=4=3 1 0
+1 3 4 2 0
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
+    return blt_content
+
+
+@pytest.fixture
+def grammar_blt_content_no_zero_terminators():
+    """Create BLT content for grammar testing without zero terminators."""
+    # This replicates the structure of ballots_no_zero.blt for grammar testing
+    blt_content = """4 2
+-2
+3 1 3 4
+4 1 3 2
+2 4 1=3
+1 2
+2 2=4=3 1
+1 3 4 2
+0
+"Adam"
+"Basil"
+"Charlotte"
+"Donald"
+"Cool Election"
+"""
+    return blt_content
+
+
+@pytest.fixture
+def grammar_blt_file_withdrawn(grammar_blt_content_withdrawn):
+    """Create temporary BLT file with withdrawn candidates for grammar testing."""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(grammar_blt_content_withdrawn)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup
+
+
+@pytest.fixture
+def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
+    """Create temporary BLT file without withdrawn candidates for grammar testing."""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(grammar_blt_content_no_withdrawn)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup
+
+
+@pytest.fixture
+def grammar_blt_file_no_zero_terminators(grammar_blt_content_no_zero_terminators):
+    """Create temporary BLT file without zero terminators for grammar testing."""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+        f.write(grammar_blt_content_no_zero_terminators)
+        temp_path = Path(f.name)
+
+    yield temp_path
+    temp_path.unlink()  # Cleanup

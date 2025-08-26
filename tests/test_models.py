@@ -1,8 +1,5 @@
 """
 Tests for the models module.
-
-This module contains comprehensive tests for the Election, Candidate, and Ballot models,
-organized by component using test classes for better maintainability and structure.
 """
 
 import pytest
