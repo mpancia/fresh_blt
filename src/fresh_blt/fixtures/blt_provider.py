@@ -188,7 +188,7 @@ class BLTProvider(BaseProvider):
         remaining_ballots = num_ballots
 
         # Generate target vote counts that are close to each other
-        for i in range(num_candidates - 1):
+        for _ in range(num_candidates - 1):
             # Each candidate gets between 15-35% of remaining votes
             min_votes = max(1, int(remaining_ballots * 0.15))
             max_votes = int(remaining_ballots * 0.35)
@@ -204,7 +204,6 @@ class BLTProvider(BaseProvider):
 
         # Generate ballots to match target distribution
         ballots = []
-        candidate_indices = list(range(num_candidates))
 
         for candidate_idx, target_count in enumerate(target_votes):
             candidate_id = candidate_idx + 1
