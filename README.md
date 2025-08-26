@@ -20,7 +20,7 @@ A CLI tool and python library for parsing and analyzing Opavote .blt files used 
 
 Install using your preferred package manager:
 
-**Using uvx (recommended for uv users):**
+**Using uvx:**
 ```bash
 uvx fresh_blt --help
 ```
@@ -50,11 +50,11 @@ pip install .
 
 ## CLI Usage
 
-The `fresh_blt` CLI provides several commands for working with BLT files:
+The `fresh_blt` CLI provides several commands for working with .blt files:
 
 ### Basic Information
 
-Display basic information about a BLT file:
+Display basic information about a .blt file:
 
 ```bash
 fresh_blt info path/to/election.blt
@@ -107,7 +107,7 @@ This provides:
 
 ### Data Export
 
-Export BLT data to JSON or CSV formats with improved structure:
+Export .blt data to JSON or CSV formats with improved structure:
 
 ```bash
 # Export to JSON (comprehensive format with summary)
@@ -134,7 +134,7 @@ fresh_blt dataframe path/to/election.blt --no-show-preview
 
 ### Validation
 
-Validate BLT file structure and data integrity:
+Validate .blt file structure and data integrity:
 
 ```bash
 fresh_blt validate path/to/election.blt
@@ -166,11 +166,8 @@ fresh_blt info election.blt
 # Analyze candidate performance
 fresh_blt stats election.blt
 
-# Extract data for further analysis (using short options)
+# Extract data for further analysis
 fresh_blt export election.blt -o analysis.json -f json
-
-# Extract data using long options
-fresh_blt export election.blt --output analysis.json --format json
 
 # Check file integrity
 fresh_blt validate election.blt

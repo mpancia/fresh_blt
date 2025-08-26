@@ -97,8 +97,7 @@ def export_to_json(
     ballots: list[dict[str, Any]],
     output_path: Path
 ) -> Path:
-    """Export election data to a comprehensive JSON file."""
-    # Prepare data for JSON serialization
+    """Export election data to a single JSON file."""
     json_candidates = [candidate.model_dump() for candidate in candidates]
 
     json_ballots = []
@@ -129,7 +128,7 @@ def export_to_json(
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(export_data, f, indent=2, ensure_ascii=False)
 
-    console.print(f"[green]✓ Exported comprehensive data to {output_path}[/green]")
+    console.print(f"[green]✓ Exported JSON data to {output_path}[/green]")
     return output_path
 
 
