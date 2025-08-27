@@ -1,8 +1,8 @@
 """
-Faker provider for generating BLT (Ballot Transmission Language) files.
+Faker provider for generating .blt files.
 
 This module provides a Faker provider that can generate:
-- Complete BLT file content
+- Complete .blt file content
 - Election objects with realistic voting patterns
 - Individual components (candidates, ballots)
 """
@@ -18,10 +18,10 @@ from fresh_blt.models.election import Election
 
 class BLTProvider(BaseProvider):
     """
-    Faker provider for generating BLT election data.
+    Faker provider for generating .blt election data.
 
     Provides methods to generate:
-    - Complete BLT file content
+    - Complete .blt file content
     - Election objects with realistic voting patterns
     - Individual components (candidates, ballots)
     """
@@ -254,7 +254,7 @@ class BLTProvider(BaseProvider):
         return {"rankings": rankings, "weight": weight}
 
     def blt_content(self, election_data: dict[str, Any] | None = None) -> str:
-        """Generate BLT file content from election data."""
+        """Generate .blt file content from election data."""
         if election_data is None:
             election_data = self.election()
 
@@ -304,7 +304,7 @@ class BLTProvider(BaseProvider):
         return "\n".join(lines)
 
     def blt_file(self, filepath: str, election_data: dict[str, Any] | None = None) -> str:
-        """Generate and save BLT file."""
+        """Generate and save .blt file."""
         content = self.blt_content(election_data)
 
         with open(filepath, "w", encoding="utf-8") as f:

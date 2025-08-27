@@ -17,7 +17,7 @@ Candidate.model_rebuild()
 
 @pytest.fixture
 def faker():
-    """Faker instance with BLT provider for testing."""
+    """Faker instance with .blt provider for testing."""
     faker = Faker()
     faker.seed_instance(42)  # Reproducible tests
     faker.add_provider(BLTProvider)
@@ -100,7 +100,7 @@ def withdrawn_election(faker):
 
 @pytest.fixture
 def blt_content(faker):
-    """Generate BLT file content for testing."""
+    """Generate .blt file content for testing."""
     return faker.blt_content()
 
 
@@ -110,10 +110,10 @@ def election_data(faker):
     return faker.election(num_candidates=4, num_ballots=5)
 
 
-# Temporary BLT file fixtures for CLI testing
+# Temporary .blt file fixtures for CLI testing
 @pytest.fixture
 def valid_blt_file(faker):
-    """Create a temporary valid BLT file with 4 candidates (one withdrawn)."""
+    """Create a temporary valid .blt file with 4 candidates (one withdrawn)."""
     election_data = faker.election(
         num_candidates=4,
         num_ballots=8,
@@ -132,7 +132,7 @@ def valid_blt_file(faker):
 
 @pytest.fixture
 def valid_blt_no_withdrawn_file(faker):
-    """Create a temporary valid BLT file with 4 candidates (no withdrawn)."""
+    """Create a temporary valid .blt file with 4 candidates (no withdrawn)."""
     election_data = faker.election(
         num_candidates=4,
         num_ballots=6,
@@ -151,7 +151,7 @@ def valid_blt_no_withdrawn_file(faker):
 
 @pytest.fixture
 def invalid_blt_file():
-    """Create a temporary invalid BLT file for error testing."""
+    """Create a temporary invalid .blt file for error testing."""
     invalid_content = "This is not a valid BLT file\nJust some random text\n123\n"
 
     with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
@@ -162,10 +162,10 @@ def invalid_blt_file():
     temp_path.unlink()  # Cleanup
 
 
-# Temporary BLT file fixtures for grammar testing
+# Temporary .blt file fixtures for grammar testing
 @pytest.fixture
 def grammar_blt_content_withdrawn():
-    """Create BLT content for grammar testing with withdrawn candidates."""
+    """Create .blt content for grammar testing with withdrawn candidates."""
     blt_content = """4 2
 -2
 3 1 3 4 0
@@ -186,7 +186,7 @@ def grammar_blt_content_withdrawn():
 
 @pytest.fixture
 def grammar_blt_content_no_withdrawn():
-    """Create BLT content for grammar testing without withdrawn candidates."""
+    """Create .blt content for grammar testing without withdrawn candidates."""
     blt_content = """4 2
 3 1 3 4 0
 4 1 3 2 0
@@ -206,7 +206,7 @@ def grammar_blt_content_no_withdrawn():
 
 @pytest.fixture
 def grammar_blt_content_no_zero_terminators():
-    """Create BLT content for grammar testing without zero terminators."""
+    """Create .blt content for grammar testing without zero terminators."""
     blt_content = """4 2
 -2
 3 1 3 4
@@ -227,7 +227,7 @@ def grammar_blt_content_no_zero_terminators():
 
 @pytest.fixture
 def grammar_blt_file_withdrawn(grammar_blt_content_withdrawn):
-    """Create temporary BLT file with withdrawn candidates for grammar testing."""
+    """Create temporary .blt file with withdrawn candidates for grammar testing."""
     with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
         f.write(grammar_blt_content_withdrawn)
         temp_path = Path(f.name)
@@ -238,7 +238,7 @@ def grammar_blt_file_withdrawn(grammar_blt_content_withdrawn):
 
 @pytest.fixture
 def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
-    """Create temporary BLT file without withdrawn candidates for grammar testing."""
+    """Create temporary .blt file without withdrawn candidates for grammar testing."""
     with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
         f.write(grammar_blt_content_no_withdrawn)
         temp_path = Path(f.name)
@@ -249,7 +249,7 @@ def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
 
 @pytest.fixture
 def grammar_blt_file_no_zero_terminators(grammar_blt_content_no_zero_terminators):
-    """Create temporary BLT file without zero terminators for grammar testing."""
+    """Create temporary .blt file without zero terminators for grammar testing."""
     with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
         f.write(grammar_blt_content_no_zero_terminators)
         temp_path = Path(f.name)

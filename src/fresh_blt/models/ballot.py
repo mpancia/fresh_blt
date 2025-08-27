@@ -1,5 +1,5 @@
 """
-Ballot model for BLT (Ballot Language for Tabulation) format.
+Ballot model for .blt files.
 
 This module defines the Ballot model, which represents a single voter's ranked
 preferences in an election. Ballots support both ranked-choice voting (where
@@ -71,9 +71,7 @@ class Ballot(BaseModel):
                  rankings and equal rankings (ties between candidates).
 
         weight: Positive integer representing the weight of the ballot in weighted
-               voting systems. A weight of 1 represents a single vote. Higher weights
-               are used in proportional voting systems where some voters represent
-               multiple votes (e.g., delegates, weighted shareholders). Must be > 0.
+               voting systems. Must be > 0.
 
     Class Methods:
         from_dict: Create a Ballot instance from a dictionary representation.
@@ -114,15 +112,6 @@ class Ballot(BaseModel):
             weight=10  # Represents 10 delegate votes
         )
         ```
-
-    Note:
-        The rankings structure allows for flexible preference expression:
-        - `[[alice], [bob]]` means "Alice preferred over Bob"
-        - `[[alice, bob], [charlie]]` means "Alice and Bob equally preferred, both over Charlie"
-        - `[[alice], [bob], []]` means "Alice > Bob, and the ballot is exhausted after Bob"
-
-        This structure supports all common ranked-choice voting scenarios while
-        remaining computationally efficient for tabulation algorithms.
     """
 
     rankings: list[list[Candidate]] = Field(
@@ -142,9 +131,7 @@ class Ballot(BaseModel):
         default=1,
         gt=0,  # Must be greater than 0
         description=(
-            "Weight of the ballot for weighted voting systems. Represents the "
-            "number of votes this ballot counts as (e.g., 1 for regular voters, "
-            "higher numbers for delegates or weighted systems)."
+            "Weight of the ballot for weighted voting systems. Must be a positive integer."
         ),
         examples=[1, 5, 10, 100]
     )
@@ -187,11 +174,6 @@ class Ballot(BaseModel):
     def from_dict(cls, data: dict[str, Any]) -> Ballot:
         """
         Create a Ballot instance from a dictionary representation.
-
-        This method provides a convenient way to deserialize Ballot data
-        from dictionaries, which is useful when loading from JSON files,
-        CSV data, or other serialized formats that represent ballot data
-        as key-value pairs.
 
         Args:
             data: Dictionary containing ballot data with required key 'rankings'
@@ -243,5 +225,4 @@ class Ballot(BaseModel):
         if "weight" not in data:
             raise ValueError("Missing required key: 'weight'")
 
-        # Use Pydantic's built-in validation by creating the instance
         return cls(rankings=data["rankings"], weight=data["weight"])

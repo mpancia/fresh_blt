@@ -1,4 +1,4 @@
-# BLT Fixtures
+# .blt Fixtures
 
 This module provides Faker providers and generators for creating .blt files and election data for testing and development.
 
@@ -15,11 +15,11 @@ The fixtures module contains:
 from faker import Faker
 from fresh_blt.fixtures import BLTProvider
 
-# Create faker instance with BLT provider
+# Create faker instance with blt provider
 faker = Faker()
 faker.add_provider(BLTProvider)
 
-# Generate BLT content
+# Generate blt content
 blt_content = faker.blt_content()
 
 # Generate election object
@@ -51,7 +51,7 @@ files = gen.batch_generate(count=5)
 ```python
 # tests/test_blt_generation.py
 def test_blt_generation(sample_blt):
-    """Test BLT content generation."""
+    """Test .blt content generation."""
     assert isinstance(sample_blt, str)
     assert len(sample_blt.split('\n')) > 5
 

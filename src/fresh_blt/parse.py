@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 
 def parse_blt_file(blt_path: Path) -> Tree[Any]:
     """
-    Parse BLT file into a syntax tree.
+    Parse .blt file into a syntax tree.
 
     Args:
         blt_path: Path to the BLT file
 
     Returns:
-        Parse tree representing the BLT file structure
+        Parse tree representing the .blt file structure
     """
     logger.info(f"Parsing BLT file: {blt_path}")
     return blt_parser.parse(blt_path.read_text(encoding="utf-8"))
@@ -31,7 +31,7 @@ def extract_header_info(blt_tree: Tree[Any]) -> tuple[int, int, list[int]]:
     Extract header information from the parse tree.
 
     Args:
-        blt_tree: Parse tree of the BLT file
+        blt_tree: Parse tree of the .blt file
 
     Returns:
         Tuple of (num_candidates, num_positions, withdrawn_candidate_ids)
@@ -57,7 +57,7 @@ def extract_title(blt_tree: Tree[Any]) -> str:
     Extract election title from the parse tree.
 
     Args:
-        blt_tree: Parse tree of the BLT file
+        blt_tree: Parse tree of the .blt file
 
     Returns:
         Election title as string
@@ -72,7 +72,7 @@ def extract_candidates(blt_tree: Tree[Any], withdrawn_candidate_ids: list[int]) 
     Extract and create candidate objects from the parse tree.
 
     Args:
-        blt_tree: Parse tree of the BLT file
+        blt_tree: Parse tree of the .blt file
         withdrawn_candidate_ids: List of withdrawn candidate IDs
 
     Returns:
@@ -108,7 +108,7 @@ def parse_ballots(blt_tree: Tree[Any], candidate_lookup: dict[int, Candidate]) -
     Parse all ballots from the parse tree.
 
     Args:
-        blt_tree: Parse tree of the BLT file
+        blt_tree: Parse tree of the .blt file
         candidate_lookup: Dictionary mapping candidate IDs to Candidate objects
 
     Returns:

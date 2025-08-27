@@ -44,7 +44,7 @@ class BLTGenerators:
     def batch_generate(self,
                       count: int,
                       pattern: str = "test_election_{}.blt") -> list[str]:
-        """Generate multiple BLT files."""
+        """Generate multiple .blt files."""
         files = []
         for i in range(count):
             filename = pattern.format(i + 1)

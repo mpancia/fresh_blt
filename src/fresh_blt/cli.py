@@ -21,14 +21,14 @@ from fresh_blt.parse import (
 console = Console()
 app = typer.Typer(
     name="fresh-blt",
-    help="A CLI tool for parsing and analyzing Opavote BLT files",
+    help="A CLI tool for parsing and analyzing Opavote .blt files",
     add_completion=False,
 )
 
 __all__ = ["main"]
 
 # Module-level variables for Typer defaults to avoid B008 issues
-BLT_FILE_ARG = typer.Argument(..., help="Path to the BLT file")
+BLT_FILE_ARG = typer.Argument(..., help="Path to the .blt file")
 WITHDRAWN_ONLY_OPTION = typer.Option(False, help="Show only withdrawn candidates")
 ACTIVE_ONLY_OPTION = typer.Option(False, help="Show only active candidates")
 LIMIT_OPTION = typer.Option(10, help="Maximum number of ballots to display")
@@ -38,7 +38,7 @@ FORMAT_OPTION = typer.Option("json", "-f", "--format", help="Export format (json
 
 
 def load_blt_data(file_path: Path) -> tuple[dict[str, Any], list[Candidate], list[dict[str, Any]]]:
-    """Load and parse BLT file data."""
+    """Load and parse .blt file data."""
     try:
         blt_tree = parse_blt_file(file_path)
 
@@ -65,7 +65,7 @@ def load_blt_data(file_path: Path) -> tuple[dict[str, Any], list[Candidate], lis
         return blt_data, candidate_list, ballot_list
 
     except Exception as e:
-        console.print(f"[red]Error loading BLT file: {e}[/red]")
+        console.print(f"[red]Error loading .blt file: {e}[/red]")
         raise typer.Exit(1) from None
 
 
@@ -73,8 +73,8 @@ def load_blt_data(file_path: Path) -> tuple[dict[str, Any], list[Candidate], lis
 def info(
     file_path: Path = BLT_FILE_ARG,
 ) -> None:
-    """Display basic information about a BLT file."""
-    blt_data, candidate_list, ballot_list = load_blt_data(file_path)
+    """Display basic information about a .blt file."""
+    blt_data, candidate_list, _ = load_blt_data(file_path)
 
     # Create info panel
     info_text = f"""
@@ -87,7 +87,7 @@ def info(
 
     panel = Panel(
         info_text.strip(),
-        title=f"[bold blue]BLT File: {file_path.name}[/bold blue]",
+        title=f"[bold blue].blt File: {file_path.name}[/bold blue]",
         border_style="blue",
     )
     console.print(panel)
@@ -299,11 +299,11 @@ def dataframe(
 def validate(
     file_path: Path = BLT_FILE_ARG,
 ) -> None:
-    """Validate the BLT file structure and data."""
+    """Validate the .blt file structure and data."""
     try:
         blt_data, candidate_list, ballot_list = load_blt_data(file_path)
 
-        console.print("[green]✓ BLT file structure is valid[/green]")
+        console.print("[green]✓ .blt file structure is valid[/green]")
         console.print(f"[green]✓ Found {blt_data['num_candidates']} candidates[/green]")
         console.print(f"[green]✓ Found {blt_data['total_ballots']} ballots[/green]")
 

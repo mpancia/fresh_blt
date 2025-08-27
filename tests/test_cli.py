@@ -81,11 +81,11 @@ class TestInfoCommand:
     """Test the info command."""
 
     def test_info_valid_file(self, runner, valid_blt_file):
-        """Test info command with valid BLT file."""
+        """Test info command with valid .blt file."""
         result = runner.invoke(app, ["info", str(valid_blt_file)])
 
         assert result.exit_code == 0
-        assert "BLT File:" in result.output
+        assert ".blt File:" in result.output
         assert "Election Title:" in result.output
         assert "Candidates:" in result.output
         assert "Positions:" in result.output

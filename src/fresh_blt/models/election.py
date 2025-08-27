@@ -1,5 +1,5 @@
 """
-Election model for BLT (Ballot Language for Tabulation) format.
+Election model for .blt format.
 
 This module defines the Election model, which represents an election contest
 containing candidates, ballots, and associated metadata. The model is designed
@@ -64,9 +64,8 @@ class Election(BaseModel):
                    for certain tabulation methods. Defaults to an empty list.
 
         meta: Dictionary for storing additional election metadata such as
-             location, date, election type, or any custom properties.
-             This provides extensibility for election-specific information
-             not covered by the core attributes. Defaults to an empty dict.
+             location, date, election type, or any custom properties. 
+             Defaults to an empty dict.
 
     Relationships:
         - One-to-many with Ballot: An election can have multiple ballots
@@ -91,12 +90,6 @@ class Election(BaseModel):
         election.ballots.append(ballot1)
         election.ballots.append(ballot2)
         ```
-
-    Note:
-        The election model itself doesn't perform tabulation - it serves as
-        a data container that can be processed by separate tabulation algorithms.
-        This design allows for flexibility in implementing different voting systems
-        (IRV, STV, etc.) while maintaining a consistent data structure.
     """
 
     name: str = Field(
