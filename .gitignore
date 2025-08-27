@@ -146,3 +146,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .roo
+.roomodes
+memory-bank/activeContext.md
+memory-bank/decisionLog.md
+memory-bank/productContext.md
+memory-bank/progress.md
+memory-bank/systemPatterns.md
