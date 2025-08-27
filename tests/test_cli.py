@@ -21,6 +21,7 @@ def runner():
 def temp_dir():
     """Temporary directory for output files."""
     import tempfile
+
     with tempfile.TemporaryDirectory() as tmp_dir:
         yield Path(tmp_dir)
 
@@ -136,10 +137,9 @@ class TestCandidatesCommand:
 
     def test_candidates_mutually_exclusive_options(self, runner, valid_blt_file):
         """Test candidates command with both withdrawn_only and active_only."""
-        result = runner.invoke(app, [
-            "candidates", str(valid_blt_file),
-            "--withdrawn-only", "--active-only"
-        ])
+        result = runner.invoke(
+            app, ["candidates", str(valid_blt_file), "--withdrawn-only", "--active-only"]
+        )
 
         assert result.exit_code == 0
         # Should show all candidates when both options are provided
@@ -182,10 +182,9 @@ class TestBallotsCommand:
 
     def test_ballots_with_limit_and_rankings(self, runner, valid_blt_file):
         """Test ballots command with both limit and show_rankings."""
-        result = runner.invoke(app, [
-            "ballots", str(valid_blt_file),
-            "--limit", "3", "--show-rankings"
-        ])
+        result = runner.invoke(
+            app, ["ballots", str(valid_blt_file), "--limit", "3", "--show-rankings"]
+        )
 
         assert result.exit_code == 0
         assert "Ballots" in result.output
@@ -235,11 +234,9 @@ class TestExportCommand:
         """Test export command with JSON format."""
         output_file = temp_dir / "export.json"
 
-        result = runner.invoke(app, [
-            "export", str(valid_blt_file),
-            "--output", str(output_file),
-            "--format", "json"
-        ])
+        result = runner.invoke(
+            app, ["export", str(valid_blt_file), "--output", str(output_file), "--format", "json"]
+        )
 
         assert result.exit_code == 0
         assert f"Exported data to {output_file}" in result.output
@@ -257,11 +254,9 @@ class TestExportCommand:
         """Test export command with CSV format."""
         output_file = temp_dir / "export.csv"
 
-        result = runner.invoke(app, [
-            "export", str(valid_blt_file),
-            "--output", str(output_file),
-            "--format", "csv"
-        ])
+        result = runner.invoke(
+            app, ["export", str(valid_blt_file), "--output", str(output_file), "--format", "csv"]
+        )
 
         assert result.exit_code == 0
         assert "Exported candidates to" in result.output
@@ -277,11 +272,9 @@ class TestExportCommand:
         """Test export command with unsupported format."""
         output_file = temp_dir / "export.txt"
 
-        result = runner.invoke(app, [
-            "export", str(valid_blt_file),
-            "--output", str(output_file),
-            "--format", "txt"
-        ])
+        result = runner.invoke(
+            app, ["export", str(valid_blt_file), "--output", str(output_file), "--format", "txt"]
+        )
 
         assert result.exit_code == 1
         assert "Unsupported format: txt" in result.output
@@ -290,11 +283,9 @@ class TestExportCommand:
         """Test export command with invalid file."""
         output_file = temp_dir / "export.json"
 
-        result = runner.invoke(app, [
-            "export", str(invalid_blt_file),
-            "--output", str(output_file),
-            "--format", "json"
-        ])
+        result = runner.invoke(
+            app, ["export", str(invalid_blt_file), "--output", str(output_file), "--format", "json"]
+        )
 
         assert result.exit_code == 1
         assert "Error loading .blt file:" in result.output
@@ -385,6 +376,7 @@ class TestErrorHandling:
 
         # Remove read permission
         import os
+
         os.chmod(restricted_file, 0o000)
 
         result = runner.invoke(app, ["info", str(restricted_file)])

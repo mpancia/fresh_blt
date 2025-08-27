@@ -78,11 +78,11 @@ def info(
 
     # Create info panel
     info_text = f"""
-[bold]Election Title:[/bold] {blt_data['title']}
-[bold]Candidates:[/bold] {blt_data['num_candidates']} ({len([c for c in candidate_list if c.withdrawn])} withdrawn)
-[bold]Positions:[/bold] {blt_data['num_positions']}
-[bold]Total Ballots:[/bold] {blt_data['total_ballots']}
-[bold]Total Votes:[/bold] {blt_data['total_votes']}
+[bold]Election Title:[/bold] {blt_data["title"]}
+[bold]Candidates:[/bold] {blt_data["num_candidates"]} ({len([c for c in candidate_list if c.withdrawn])} withdrawn)
+[bold]Positions:[/bold] {blt_data["num_positions"]}
+[bold]Total Ballots:[/bold] {blt_data["total_ballots"]}
+[bold]Total Votes:[/bold] {blt_data["total_votes"]}
 """
 
     panel = Panel(
@@ -216,14 +216,16 @@ def stats(
 
     # Sort candidates by first preference votes
     sorted_candidates = sorted(
-        active_candidates,
-        key=lambda c: first_preferences[c.id],
-        reverse=True
+        active_candidates, key=lambda c: first_preferences[c.id], reverse=True
     )
 
     for candidate in sorted_candidates:
-        percentage = (first_preferences[candidate.id] / total_weight * 100) if total_weight > 0 else 0
-        stats_text += f"  • {candidate.name}: {first_preferences[candidate.id]} votes ({percentage:.1f}%)\n"
+        percentage = (
+            (first_preferences[candidate.id] / total_weight * 100) if total_weight > 0 else 0
+        )
+        stats_text += (
+            f"  • {candidate.name}: {first_preferences[candidate.id]} votes ({percentage:.1f}%)\n"
+        )
 
     panel = Panel(
         stats_text.strip(),
@@ -285,7 +287,9 @@ def dataframe(
                 console.print(preview)
 
         console.print("\n[dim]DataFrames available as: election, candidates, ballots[/dim]")
-        console.print("[dim]Use Python API to access: from fresh_blt.export import export_to_dataframes[/dim]")
+        console.print(
+            "[dim]Use Python API to access: from fresh_blt.export import export_to_dataframes[/dim]"
+        )
 
     except ImportError:
         console.print("[red]✗ pandas not available. Install with: pip install pandas[/red]")

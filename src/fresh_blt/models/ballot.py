@@ -123,8 +123,11 @@ class Ballot(BaseModel):
         ),
         examples=[
             [[{"id": 1, "name": "Alice"}], [{"id": 2, "name": "Bob"}]],  # Alice > Bob
-            [[{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}], [{"id": 3, "name": "Charlie"}]]  # Alice = Bob > Charlie
-        ]
+            [
+                [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}],
+                [{"id": 3, "name": "Charlie"}],
+            ],  # Alice = Bob > Charlie
+        ],
     )
 
     weight: int = Field(
@@ -133,10 +136,10 @@ class Ballot(BaseModel):
         description=(
             "Weight of the ballot for weighted voting systems. Must be a positive integer."
         ),
-        examples=[1, 5, 10, 100]
+        examples=[1, 5, 10, 100],
     )
 
-    @field_validator('rankings')
+    @field_validator("rankings")
     @classmethod
     def validate_rankings(cls, v: list[list[Candidate]]) -> list[list[Candidate]]:
         """

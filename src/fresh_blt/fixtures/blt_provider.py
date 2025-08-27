@@ -220,10 +220,7 @@ class BLTProvider(BaseProvider):
         }
 
     def _generate_close_ballot(
-        self,
-        candidates: list[dict[str, Any]],
-        favored_candidate_id: int,
-        closeness_factor: float
+        self, candidates: list[dict[str, Any]], favored_candidate_id: int, closeness_factor: float
     ) -> dict[str, Any]:
         """Generate a ballot that favors a specific candidate but maintains some randomness."""
         # Start with favored candidate first (closeness_factor chance)
@@ -231,7 +228,9 @@ class BLTProvider(BaseProvider):
             # Put favored candidate first
             remaining_candidates = [c for c in candidates if c["id"] != favored_candidate_id]
             self.generator.random.shuffle(remaining_candidates)
-            ordered_candidates = [next(c for c in candidates if c["id"] == favored_candidate_id)] + remaining_candidates
+            ordered_candidates = [
+                next(c for c in candidates if c["id"] == favored_candidate_id)
+            ] + remaining_candidates
         else:
             # Random ordering (for some diversity)
             ordered_candidates = list(candidates)
@@ -324,7 +323,7 @@ class BLTProvider(BaseProvider):
                 id=candidate_dict["id"],
                 name=candidate_dict["name"],
                 withdrawn=candidate_dict["withdrawn"],
-                meta=candidate_dict.get("meta", {})
+                meta=candidate_dict.get("meta", {}),
             )
             candidates.append(candidate)
 
@@ -341,15 +340,8 @@ class BLTProvider(BaseProvider):
                     level_candidates.append(candidate)
                 rankings.append(level_candidates)
 
-            ballot = Ballot(
-                rankings=rankings,
-                weight=ballot_dict["weight"]
-            )
+            ballot = Ballot(rankings=rankings, weight=ballot_dict["weight"])
             ballots.append(ballot)
 
         # Create and return Election object
-        return Election(
-            name=election_data["name"],
-            candidates=candidates,
-            ballots=ballots
-        )
+        return Election(name=election_data["name"], candidates=candidates, ballots=ballots)

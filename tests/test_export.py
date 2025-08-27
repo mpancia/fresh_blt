@@ -72,11 +72,11 @@ class TestDataFrameCreation:
         test_ballots = [
             {
                 "weight": 2,
-                "rankings": [[candidates[0]], [candidates[1]]]  # First > Second
+                "rankings": [[candidates[0]], [candidates[1]]],  # First > Second
             },
             {
                 "weight": 1,
-                "rankings": [[candidates[1]], [candidates[0]]]  # Second > First
+                "rankings": [[candidates[1]], [candidates[0]]],  # Second > First
             },
         ]
 
@@ -118,7 +118,7 @@ class TestCSVExport:
             for _i, ballot in enumerate(sample_election.ballots):
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
@@ -159,7 +159,7 @@ class TestCSVExport:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
@@ -203,11 +203,13 @@ class TestJSONExport:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
-            result_path = export_to_json(election_data, sample_election.candidates, ballots, output_path)
+            result_path = export_to_json(
+                election_data, sample_election.candidates, ballots, output_path
+            )
 
             assert result_path == output_path
             assert output_path.exists()
@@ -247,7 +249,7 @@ class TestJSONExport:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
@@ -287,7 +289,7 @@ class TestDataFramesExport:
         for ballot in sample_election.ballots:
             ballot_dict = {
                 "weight": ballot.weight,
-                "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                "rankings": [[c for c in ranking] for ranking in ballot.rankings],
             }
             ballots.append(ballot_dict)
 
@@ -326,11 +328,13 @@ class TestExportWithFormat:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
-            result = export_with_format(election_data, sample_election.candidates, ballots, output_path, "csv")
+            result = export_with_format(
+                election_data, sample_election.candidates, ballots, output_path, "csv"
+            )
 
             assert isinstance(result, list)
             assert len(result) == 3
@@ -357,11 +361,13 @@ class TestExportWithFormat:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
-            result = export_with_format(election_data, sample_election.candidates, ballots, output_path, "json")
+            result = export_with_format(
+                election_data, sample_election.candidates, ballots, output_path, "json"
+            )
 
             assert isinstance(result, Path)
             assert result.exists()
@@ -392,9 +398,11 @@ class TestExportWithFormat:
             for ballot in sample_election.ballots:
                 ballot_dict = {
                     "weight": ballot.weight,
-                    "rankings": [[c for c in ranking] for ranking in ballot.rankings]
+                    "rankings": [[c for c in ranking] for ranking in ballot.rankings],
                 }
                 ballots.append(ballot_dict)
 
             with pytest.raises(ValueError, match="Unsupported format"):
-                export_with_format(election_data, sample_election.candidates, ballots, output_path, "xml")
+                export_with_format(
+                    election_data, sample_election.candidates, ballots, output_path, "xml"
+                )

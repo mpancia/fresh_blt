@@ -106,19 +106,18 @@ class Candidate(BaseModel):
         ...,
         description="Unique integer identifier for the candidate",
         gt=0,  # Must be positive
-        examples=[1, 42, 100]
+        examples=[1, 42, 100],
     )
 
     name: str = Field(
         ...,
         description="Human-readable full name of the candidate",
         examples=["Alice Johnson", "Bob Smith", "Dr. Charlie Brown"],
-        min_length=1
+        min_length=1,
     )
 
     withdrawn: bool = Field(
-        default=False,
-        description="Whether the candidate has withdrawn from the election"
+        default=False, description="Whether the candidate has withdrawn from the election"
     )
 
     meta: dict[str, Any] = Field(
@@ -126,8 +125,8 @@ class Candidate(BaseModel):
         description="Additional candidate metadata for extensibility",
         examples=[
             {"party": "Independent", "age": 35, "experience": "5 years"},
-            {"withdrawal_reason": "Personal reasons", "withdrawal_date": "2024-10-15"}
-        ]
+            {"withdrawal_reason": "Personal reasons", "withdrawal_date": "2024-10-15"},
+        ],
     )
 
     @classmethod
@@ -173,7 +172,7 @@ class Candidate(BaseModel):
             id=data["id"],
             name=data["name"],
             withdrawn=data.get("withdrawn", False),
-            meta=data.get("meta", {})
+            meta=data.get("meta", {}),
         )
 
     def __hash__(self) -> int:

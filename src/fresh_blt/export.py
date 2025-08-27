@@ -16,16 +16,20 @@ def create_candidates_dataframe(candidates: list[Candidate]) -> pd.DataFrame:
     """Create a pandas DataFrame from candidates data."""
     data = []
     for candidate in candidates:
-        data.append({
-            "id": candidate.id,
-            "name": candidate.name,
-            "withdrawn": candidate.withdrawn,
-        })
+        data.append(
+            {
+                "id": candidate.id,
+                "name": candidate.name,
+                "withdrawn": candidate.withdrawn,
+            }
+        )
 
     return pd.DataFrame(data)
 
 
-def create_ballots_dataframe(ballots: list[dict[str, Any]], candidates: list[Candidate]) -> pd.DataFrame:
+def create_ballots_dataframe(
+    ballots: list[dict[str, Any]], candidates: list[Candidate]
+) -> pd.DataFrame:
     """Create a pandas DataFrame from ballots data."""
     candidate_lookup = {c.id: c.name for c in candidates}
 
@@ -62,27 +66,27 @@ def export_to_csv(
     election_info: dict[str, Any],
     candidates: list[Candidate],
     ballots: list[dict[str, Any]],
-    output_path: Path
+    output_path: Path,
 ) -> list[Path]:
     """Export election data to multiple CSV files."""
     output_files = []
 
     # Export election info
-    election_file = output_path.with_stem(f"{output_path.stem}_election").with_suffix('.csv')
+    election_file = output_path.with_stem(f"{output_path.stem}_election").with_suffix(".csv")
     election_df = create_election_dataframe(election_info)
     election_df.to_csv(election_file, index=False)
     output_files.append(election_file)
     console.print(f"[green]✓ Exported election info to {election_file}[/green]")
 
     # Export candidates
-    candidates_file = output_path.with_stem(f"{output_path.stem}_candidates").with_suffix('.csv')
+    candidates_file = output_path.with_stem(f"{output_path.stem}_candidates").with_suffix(".csv")
     candidates_df = create_candidates_dataframe(candidates)
     candidates_df.to_csv(candidates_file, index=False)
     output_files.append(candidates_file)
     console.print(f"[green]✓ Exported candidates to {candidates_file}[/green]")
 
     # Export ballots
-    ballots_file = output_path.with_stem(f"{output_path.stem}_ballots").with_suffix('.csv')
+    ballots_file = output_path.with_stem(f"{output_path.stem}_ballots").with_suffix(".csv")
     ballots_df = create_ballots_dataframe(ballots, candidates)
     ballots_df.to_csv(ballots_file, index=False)
     output_files.append(ballots_file)
@@ -95,7 +99,7 @@ def export_to_json(
     election_info: dict[str, Any],
     candidates: list[Candidate],
     ballots: list[dict[str, Any]],
-    output_path: Path
+    output_path: Path,
 ) -> Path:
     """Export election data to a single JSON file."""
     json_candidates = [candidate.model_dump() for candidate in candidates]
@@ -106,9 +110,8 @@ def export_to_json(
             "ballot_id": i + 1,
             "weight": ballot["weight"],
             "rankings": [
-                [candidate.model_dump() for candidate in ranking]
-                for ranking in ballot["rankings"]
-            ]
+                [candidate.model_dump() for candidate in ranking] for ranking in ballot["rankings"]
+            ],
         }
         json_ballots.append(json_ballot)
 
@@ -122,7 +125,7 @@ def export_to_json(
             "total_vote_weight": sum(b["weight"] for b in ballots),
             "active_candidates": len([c for c in candidates if not c.withdrawn]),
             "withdrawn_candidates": len([c for c in candidates if c.withdrawn]),
-        }
+        },
     }
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -133,9 +136,7 @@ def export_to_json(
 
 
 def export_to_dataframes(
-    election_info: dict[str, Any],
-    candidates: list[Candidate],
-    ballots: list[dict[str, Any]]
+    election_info: dict[str, Any], candidates: list[Candidate], ballots: list[dict[str, Any]]
 ) -> dict[str, pd.DataFrame]:
     """Create and return pandas DataFrames for all election data."""
     return {
@@ -150,7 +151,7 @@ def export_with_format(
     candidates: list[Candidate],
     ballots: list[dict[str, Any]],
     output_path: Path,
-    format: str
+    format: str,
 ) -> list[Path] | Path:
     """Export election data in the specified format."""
     if format.lower() == "json":

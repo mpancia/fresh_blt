@@ -31,7 +31,7 @@ def sample_election(faker):
         faker.election(
             num_candidates=4,
             num_ballots=2,
-            withdrawn_rate=0.25  # One candidate will be withdrawn
+            withdrawn_rate=0.25,  # One candidate will be withdrawn
         )
     )
 
@@ -43,32 +43,32 @@ def predictable_election(faker):
 
     # Create a specific election structure for testing
     election_data = {
-        'name': 'Test Election',
-        'candidates': [
-            {'id': 1, 'name': 'Alice', 'withdrawn': False},
-            {'id': 2, 'name': 'Bob', 'withdrawn': False},
-            {'id': 3, 'name': 'Carol', 'withdrawn': True},  
-            {'id': 4, 'name': 'Dave', 'withdrawn': False},
+        "name": "Test Election",
+        "candidates": [
+            {"id": 1, "name": "Alice", "withdrawn": False},
+            {"id": 2, "name": "Bob", "withdrawn": False},
+            {"id": 3, "name": "Carol", "withdrawn": True},
+            {"id": 4, "name": "Dave", "withdrawn": False},
         ],
-        'ballots': [
+        "ballots": [
             {
-                'weight': 2,
-                'rankings': [
-                    [{'id': 1, 'name': 'Alice'}],  
-                    [{'id': 2, 'name': 'Bob'}, {'id': 4, 'name': 'Dave'}],  
-                    [{'id': 3, 'name': 'Carol'}],  
-                ]
+                "weight": 2,
+                "rankings": [
+                    [{"id": 1, "name": "Alice"}],
+                    [{"id": 2, "name": "Bob"}, {"id": 4, "name": "Dave"}],
+                    [{"id": 3, "name": "Carol"}],
+                ],
             },
             {
-                'weight': 1,
-                'rankings': [
-                    [{'id': 2, 'name': 'Bob'}],  
-                    [{'id': 1, 'name': 'Alice'}],
-                    [{'id': 4, 'name': 'Dave'}],
-                ]
-            }
+                "weight": 1,
+                "rankings": [
+                    [{"id": 2, "name": "Bob"}],
+                    [{"id": 1, "name": "Alice"}],
+                    [{"id": 4, "name": "Dave"}],
+                ],
+            },
         ],
-        'num_seats': 1
+        "num_seats": 1,
     }
 
     return faker.election_object(election_data)
@@ -77,17 +77,13 @@ def predictable_election(faker):
 @pytest.fixture
 def small_election(faker):
     """Generate a small election (3 candidates, 5 ballots)."""
-    return faker.election_object(
-        faker.election(num_candidates=3, num_ballots=5)
-    )
+    return faker.election_object(faker.election(num_candidates=3, num_ballots=5))
 
 
 @pytest.fixture
 def large_election(faker):
     """Generate a larger election for comprehensive testing."""
-    return faker.election_object(
-        faker.election(num_candidates=6, num_ballots=20)
-    )
+    return faker.election_object(faker.election(num_candidates=6, num_ballots=20))
 
 
 @pytest.fixture
@@ -115,33 +111,25 @@ def election_data(faker):
 def valid_blt_file(faker):
     """Create a temporary valid .blt file with 4 candidates (one withdrawn)."""
     election_data = faker.election(
-        num_candidates=4,
-        num_ballots=8,
-        withdrawn_rate=0.25,
-        num_seats=2
+        num_candidates=4, num_ballots=8, withdrawn_rate=0.25, num_seats=2
     )
     blt_content = faker.blt_content(election_data)
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(blt_content)
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink()  
+    temp_path.unlink()
 
 
 @pytest.fixture
 def valid_blt_no_withdrawn_file(faker):
     """Create a temporary valid .blt file with 4 candidates (no withdrawn)."""
-    election_data = faker.election(
-        num_candidates=4,
-        num_ballots=6,
-        withdrawn_rate=0.0,
-        num_seats=1
-    )
+    election_data = faker.election(num_candidates=4, num_ballots=6, withdrawn_rate=0.0, num_seats=1)
     blt_content = faker.blt_content(election_data)
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(blt_content)
         temp_path = Path(f.name)
 
@@ -154,7 +142,7 @@ def invalid_blt_file():
     """Create a temporary invalid .blt file for error testing."""
     invalid_content = "This is not a valid BLT file\nJust some random text\n123\n"
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(invalid_content)
         temp_path = Path(f.name)
 
@@ -228,18 +216,18 @@ def grammar_blt_content_no_zero_terminators():
 @pytest.fixture
 def grammar_blt_file_withdrawn(grammar_blt_content_withdrawn):
     """Create temporary .blt file with withdrawn candidates for grammar testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(grammar_blt_content_withdrawn)
         temp_path = Path(f.name)
 
     yield temp_path
-    temp_path.unlink() 
+    temp_path.unlink()
 
 
 @pytest.fixture
 def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
     """Create temporary .blt file without withdrawn candidates for grammar testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(grammar_blt_content_no_withdrawn)
         temp_path = Path(f.name)
 
@@ -250,7 +238,7 @@ def grammar_blt_file_no_withdrawn(grammar_blt_content_no_withdrawn):
 @pytest.fixture
 def grammar_blt_file_no_zero_terminators(grammar_blt_content_no_zero_terminators):
     """Create temporary .blt file without zero terminators for grammar testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.blt', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".blt", delete=False) as f:
         f.write(grammar_blt_content_no_zero_terminators)
         temp_path = Path(f.name)
 

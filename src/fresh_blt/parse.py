@@ -48,7 +48,9 @@ def extract_header_info(blt_tree: Tree[Any]) -> tuple[int, int, list[int]]:
             for entry in withdrawn.children  # pyright: ignore
         ]
 
-    logger.info(f"Found {num_candidates} candidates, {num_positions} positions, {len(withdrawn_candidate_ids)} withdrawn candidates")
+    logger.info(
+        f"Found {num_candidates} candidates, {num_positions} positions, {len(withdrawn_candidate_ids)} withdrawn candidates"
+    )
     return num_candidates, num_positions, withdrawn_candidate_ids
 
 
@@ -88,22 +90,22 @@ def extract_candidates(blt_tree: Tree[Any], withdrawn_candidate_ids: list[int]) 
     ]
 
     candidate_list = []
-    for (candidate_name, id) in ided_candidates:
+    for candidate_name, id in ided_candidates:
         is_withdrawn = id in withdrawn_candidate_ids
         candidate_list.append(
-            Candidate.from_dict({
-                "id": id,
-                "name": candidate_name,
-                "withdrawn": is_withdrawn
-            })
+            Candidate.from_dict({"id": id, "name": candidate_name, "withdrawn": is_withdrawn})
         )
         logger.debug(f"Created candidate: {candidate_name} (ID: {id}, Withdrawn: {is_withdrawn})")
 
-    logger.info(f"Created {len(candidate_list)} candidates, {len(withdrawn_candidate_ids)} withdrawn")
+    logger.info(
+        f"Created {len(candidate_list)} candidates, {len(withdrawn_candidate_ids)} withdrawn"
+    )
     return candidate_list
 
 
-def parse_ballots(blt_tree: Tree[Any], candidate_lookup: dict[int, Candidate]) -> list[dict[str, Any]]:
+def parse_ballots(
+    blt_tree: Tree[Any], candidate_lookup: dict[int, Candidate]
+) -> list[dict[str, Any]]:
     """
     Parse all ballots from the parse tree.
 
@@ -166,13 +168,12 @@ def parse_ballot(ballot_tree: Tree[Any], candidate_lookup: dict[int, Candidate])
         if candidates_at_level:  # Only add non-empty preference levels
             rankings.append(candidates_at_level)
 
-    return {
-        "weight": weight,
-        "rankings": rankings
-    }
+    return {"weight": weight, "rankings": rankings}
 
 
-def parse_ballot_candidates(candidates_node: Tree[Any] | list[Any], candidate_lookup: dict[int, Candidate]) -> list[Candidate]:
+def parse_ballot_candidates(
+    candidates_node: Tree[Any] | list[Any], candidate_lookup: dict[int, Candidate]
+) -> list[Candidate]:
     """
     Parse candidate preferences from a ballot preference node.
 

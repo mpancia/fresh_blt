@@ -64,7 +64,7 @@ class Election(BaseModel):
                    for certain tabulation methods. Defaults to an empty list.
 
         meta: Dictionary for storing additional election metadata such as
-             location, date, election type, or any custom properties. 
+             location, date, election type, or any custom properties.
              Defaults to an empty dict.
 
     Relationships:
@@ -96,21 +96,21 @@ class Election(BaseModel):
         ...,
         description="Human-readable name or title of the election contest",
         examples=["City Council Election", "Board Member Race 2024"],
-        min_length=1
+        min_length=1,
     )
 
     ballots: list[Ballot] = Field(
         default_factory=list,
-        description="List of all ballots cast in the election with voter rankings and weights"
+        description="List of all ballots cast in the election with voter rankings and weights",
     )
 
     candidates: list[Candidate] = Field(
         default_factory=list,
-        description="List of all candidates participating in the election, including withdrawn ones"
+        description="List of all candidates participating in the election, including withdrawn ones",
     )
 
     meta: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional election metadata for extensibility",
-        examples=[{"location": "City Hall", "date": "2024-11-05", "type": "ranked_choice"}]
+        examples=[{"location": "City Hall", "date": "2024-11-05", "type": "ranked_choice"}],
     )

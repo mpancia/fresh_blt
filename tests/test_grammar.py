@@ -61,7 +61,7 @@ class TestGrammarParser:
     def test_grammar_parser_creation(self):
         """Test that the parser is created successfully."""
         assert blt_parser is not None
-        assert hasattr(blt_parser, 'parse')
+        assert hasattr(blt_parser, "parse")
 
     def test_grammar_parser_start_rule(self):
         """Test that parser starts with correct rule."""
@@ -79,7 +79,9 @@ class TestGrammarParser:
         tree, _ = parsed_tree
         title = tree.children[-1]
         title_value = str(title.children[0]).strip('"')
-        assert title_value == "Cool Election", f"Expected title 'Cool Election', got '{title_value}'"
+        assert title_value == "Cool Election", (
+            f"Expected title 'Cool Election', got '{title_value}'"
+        )
 
     def test_grammar_withdrawn_candidates_parsed_correctly(self, parsed_tree):
         """Test that withdrawn candidates section is parsed correctly."""
@@ -152,7 +154,7 @@ class TestGrammarParser:
         assert ballots is not None
         for ballot_line in ballots.children:
             preferences = ballot_line.children[1]  # Second child should be preferences
-            assert hasattr(preferences, 'data') and preferences.data == "ballot_prefs"
+            assert hasattr(preferences, "data") and preferences.data == "ballot_prefs"
             assert len(preferences.children) > 0, "Ballot should have preferences"
 
 
@@ -168,7 +170,7 @@ class TestGrammarErrorHandling:
         """Test that parser rejects invalid header format."""
         invalid_inputs = [
             "abc",  # Non-numeric header
-            "4",    # Only one number
+            "4",  # Only one number
             "4 2 extra",  # Too many values
         ]
         for invalid_input in invalid_inputs:
@@ -178,13 +180,13 @@ class TestGrammarErrorHandling:
     def test_grammar_negative_candidate_count(self):
         """Test that parser rejects negative candidate count."""
         with pytest.raises(UnexpectedInput):
-            blt_parser.parse("-1 2\n0\n\"Test\"\n\"Test Election\"")
+            blt_parser.parse('-1 2\n0\n"Test"\n"Test Election"')
 
     def test_grammar_zero_candidate_count(self):
         """Test that parser handles zero candidate count."""
         # This might be valid depending on the grammar, but let's test it
         try:
-            tree = blt_parser.parse("0 0\n0\n\"Test Election\"")
+            tree = blt_parser.parse('0 0\n0\n"Test Election"')
             assert tree is not None
         except UnexpectedInput:
             # If it's invalid, that's also acceptable behavior
@@ -193,18 +195,18 @@ class TestGrammarErrorHandling:
     def test_grammar_missing_title(self):
         """Test that parser requires title."""
         with pytest.raises(UnexpectedInput):
-            blt_parser.parse("4 2\n0\n\"Candidate\"")
+            blt_parser.parse('4 2\n0\n"Candidate"')
 
     def test_grammar_invalid_ballot_weight(self):
         """Test that parser handles invalid ballot weights."""
         # Test with negative weight - should be rejected
         with pytest.raises(UnexpectedInput):
-            blt_parser.parse("1 1\n-1 1 0\n0\n\"Candidate\"\n\"Test\"")
+            blt_parser.parse('1 1\n-1 1 0\n0\n"Candidate"\n"Test"')
 
     def test_grammar_ballot_without_zero_terminator_parses_correctly(self):
         """Test that parser handles ballot lines without 0 terminator correctly."""
         # This should now parse successfully since we made terminators optional
-        tree = blt_parser.parse("1 1\n1 1\n0\n\"Candidate\"\n\"Test\"")
+        tree = blt_parser.parse('1 1\n1 1\n0\n"Candidate"\n"Test"')
         assert tree is not None
 
 

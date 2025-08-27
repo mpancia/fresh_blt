@@ -38,9 +38,9 @@ class TestCandidate:
     def test_candidate_attributes(self, sample_election):
         """Test that all candidates have required attributes."""
         for candidate in sample_election.candidates:
-            assert hasattr(candidate, 'id')
-            assert hasattr(candidate, 'name')
-            assert hasattr(candidate, 'withdrawn')
+            assert hasattr(candidate, "id")
+            assert hasattr(candidate, "name")
+            assert hasattr(candidate, "withdrawn")
             assert isinstance(candidate.id, int)
             assert isinstance(candidate.name, str)
             assert isinstance(candidate.withdrawn, bool)
@@ -57,12 +57,7 @@ class TestCandidate:
 
     def test_candidate_creation_from_dict(self):
         """Test Candidate.from_dict method with valid data."""
-        data = {
-            "id": 1,
-            "name": "Test Candidate",
-            "withdrawn": False,
-            "meta": {"extra": "data"}
-        }
+        data = {"id": 1, "name": "Test Candidate", "withdrawn": False, "meta": {"extra": "data"}}
         candidate = Candidate.from_dict(data)
 
         assert candidate.id == 1
@@ -87,8 +82,8 @@ class TestBallot:
     def test_ballot_attributes(self, sample_election):
         """Test that all ballots have required attributes with correct types."""
         for ballot in sample_election.ballots:
-            assert hasattr(ballot, 'rankings')
-            assert hasattr(ballot, 'weight')
+            assert hasattr(ballot, "rankings")
+            assert hasattr(ballot, "weight")
             assert isinstance(ballot.rankings, list)
             assert isinstance(ballot.weight, int)
             assert ballot.weight > 0
@@ -111,8 +106,8 @@ class TestBallot:
                 assert isinstance(ranking_level, list)
                 # Each ranking level should contain candidates
                 for candidate in ranking_level:
-                    assert hasattr(candidate, 'name')
-                    assert hasattr(candidate, 'id')
+                    assert hasattr(candidate, "name")
+                    assert hasattr(candidate, "id")
                     assert candidate.name in {c.name for c in sample_election.candidates}
 
     def test_ballot_rankings_sets(self, sample_election):
@@ -149,10 +144,7 @@ class TestBallot:
         candidate1 = sample_election.candidates[0]
         candidate2 = sample_election.candidates[1]
 
-        data = {
-            "rankings": [[candidate1], [candidate2]],
-            "weight": 3
-        }
+        data = {"rankings": [[candidate1], [candidate2]], "weight": 3}
         ballot = Ballot.from_dict(data)
 
         assert len(ballot.rankings) == 2
