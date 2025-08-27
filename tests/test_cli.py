@@ -97,14 +97,14 @@ class TestInfoCommand:
         result = runner.invoke(app, ["info", str(invalid_blt_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
     def test_info_nonexistent_file(self, runner):
         """Test info command with nonexistent file."""
         result = runner.invoke(app, ["info", "nonexistent.blt"])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
 
 class TestCandidatesCommand:
@@ -149,7 +149,7 @@ class TestCandidatesCommand:
         result = runner.invoke(app, ["candidates", str(invalid_blt_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
 
 class TestBallotsCommand:
@@ -196,7 +196,7 @@ class TestBallotsCommand:
         result = runner.invoke(app, ["ballots", str(invalid_blt_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
 
 class TestStatsCommand:
@@ -225,7 +225,7 @@ class TestStatsCommand:
         result = runner.invoke(app, ["stats", str(invalid_blt_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
 
 class TestExportCommand:
@@ -297,7 +297,7 @@ class TestExportCommand:
         ])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
 
 class TestValidateCommand:
@@ -308,7 +308,7 @@ class TestValidateCommand:
         result = runner.invoke(app, ["validate", str(valid_blt_file)])
 
         assert result.exit_code == 0
-        assert "✓ BLT file structure is valid" in result.output
+        assert "✓ .blt file structure is valid" in result.output
         assert "✓ All ballot references are valid" in result.output
         assert "✓ Validation completed successfully" in result.output
 
@@ -317,7 +317,7 @@ class TestValidateCommand:
         result = runner.invoke(app, ["validate", str(valid_blt_no_withdrawn_file)])
 
         assert result.exit_code == 0
-        assert "✓ BLT file structure is valid" in result.output
+        assert "✓ .blt file structure is valid" in result.output
 
     def test_validate_invalid_file(self, runner, invalid_blt_file):
         """Test validate command with invalid BLT file."""
@@ -401,7 +401,7 @@ class TestErrorHandling:
         result = runner.invoke(app, ["info", str(empty_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
 
     def test_malformed_file_error(self, runner, temp_dir):
         """Test handling of malformed files."""
@@ -411,4 +411,4 @@ class TestErrorHandling:
         result = runner.invoke(app, ["info", str(malformed_file)])
 
         assert result.exit_code == 1
-        assert "Error loading BLT file:" in result.output
+        assert "Error loading .blt file:" in result.output
