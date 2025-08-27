@@ -241,7 +241,7 @@ def export(
     output: Path = OUTPUT_OPTION,
     format: str = FORMAT_OPTION,
 ) -> None:
-    """Export BLT data to JSON or CSV format."""
+    """Export .blt data to JSON or CSV format."""
     blt_data, candidate_list, ballot_list = load_blt_data(file_path)
 
     try:
@@ -267,7 +267,7 @@ def dataframe(
     file_path: Path = BLT_FILE_ARG,
     show_preview: bool = typer.Option(True, help="Show preview of DataFrames"),
 ) -> None:
-    """Create and display pandas DataFrames from BLT data."""
+    """Create and display pandas DataFrames from .blt data."""
     try:
         from fresh_blt.export import export_to_dataframes
 
@@ -292,7 +292,7 @@ def dataframe(
         )
 
     except ImportError:
-        console.print("[red]✗ pandas not available. Install with: pip install pandas[/red]")
+        console.print("[red]✗ pandas not available.[/red]")
         raise typer.Exit(1) from None
     except Exception as e:
         console.print(f"[red]✗ DataFrame creation failed: {e}[/red]")
