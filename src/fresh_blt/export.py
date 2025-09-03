@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ from rich.console import Console
 from fresh_blt.models.candidate import Candidate
 
 console = Console()
+logger = logging.getLogger(__name__)
 
 
 def create_candidates_dataframe(candidates: list[Candidate]) -> pd.DataFrame:
